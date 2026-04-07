@@ -10,6 +10,18 @@ CREATE TABLE users (
     deleted_at DATETIME DEFAULT NULL
 );
 
+CREATE TABLE supplier (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    contact VARCHAR(15) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by INT,
+    updated_by INT,
+    deleted_at DATETIME DEFAULT NULL
+); 
+
 CREATE TABLE product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -24,8 +36,7 @@ CREATE TABLE product (
     updated_by INT,
     deleted_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) on update cascade,
-    FOREIGN KEY (supplier_id) REFERENCES supplier(id) on update cascade,
-    deleted_at DATETIME DEFAULT NULL
+    FOREIGN KEY (supplier_id) REFERENCES supplier(id) on update cascade
 );
 
 CREATE TABLE customer (
@@ -38,18 +49,6 @@ CREATE TABLE customer (
     updated_by INT,
     deleted_at DATETIME DEFAULT NULL
 );
-
-CREATE TABLE supplier (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    contact VARCHAR(15) NOT NULL,
-    address VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_by INT,
-    updated_by INT,
-    deleted_at DATETIME DEFAULT NULL
-); 
 
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,6 +74,17 @@ CREATE TABLE order_details (
     FOREIGN KEY (product_id) REFERENCES product(id) on update cascade
 );
 
+CREATE TABLE warehouse (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_by INT,
+    updated_by INT,
+    deleted_at DATETIME DEFAULT NULL
+);
+
 CREATE TABLE inventory (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
@@ -87,17 +97,6 @@ CREATE TABLE inventory (
     updated_by INT,
     FOREIGN KEY (product_id) REFERENCES product(id) on delete cascade on update cascade,
     FOREIGN KEY (warehouse_id) REFERENCES warehouse(id) on delete cascade on update cascade
-);
-
-CREATE TABLE warehouse (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    created_by INT,
-    updated_by INT,
-    deleted_at DATETIME DEFAULT NULL
 );
 
 CREATE TABLE pre_orders (
