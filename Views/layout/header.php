@@ -8,14 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100">
-    <nav class="bg-blue-600 p-4 text-white">
-        <h1>My Inventory</h1>
-    </nav>
-    <div class="container mx-auto mt-4">
-
-    </div>
-
+<footer class="p-4 text-center text-gray-500">
+        &copy; 2026 Inventory Management System
+    </footer>
 </body>
-
 </html>
