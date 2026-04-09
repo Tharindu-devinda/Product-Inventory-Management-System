@@ -9,7 +9,7 @@ $routes->add('register', new Route('/register', [
     'file' => 'Views/register.php'
 ]));
 
-$routes->add('login', new Route('/login', [
+$routes->add('login', new Route('/', [
     'file' => 'Views/login.php'
 ]));
 
