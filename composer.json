@@ -2,7 +2,7 @@
     "name": "acer/product_inventory_management_system",
     "autoload": {
         "psr-4": {
-            "Acer\\ProductInventoryManagementSystem\\": "src/"
+            "Acer\\ProductInventoryManagementSystem\\": "/"
         }
     },
     "authors": [
@@ -11,5 +11,8 @@
             "email": "tharindudevinda123456@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "symfony/routing": "^7.4",
+        "symfony/http-foundation": "^7.4"
+    }
 }

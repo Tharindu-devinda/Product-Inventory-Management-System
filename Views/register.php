@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | Product Inventory Management System</title>
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link href="./assets/output.css" rel="stylesheet">
 </head>
 
 <body class="login flex items-center justify-center min-h-screen bg-orange-100">
