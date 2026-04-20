@@ -36,14 +36,30 @@ try {
     //Find which route matches the current URL
     $params = $matcher->match($pathInfo);
 
-    // Get the file path from the matched route
-    $file = __DIR__ . '/' . $params['file'];
+    if (isset($params['_controller'])) {
 
-    //Check if the file exists and include it
-    if (file_exists($file)) {
-        include $file; 
+        // Example: UserController::register
+        list($controllerName, $methodName) = explode('::', $params['_controller']);
+
+        // Build full class name (adjust namespace if you use one)
+        $controllerFile = __DIR__ . '/Controllers/' . $controllerName . '.php';
+
+        if (file_exists($controllerFile)) {
+            require_once $controllerFile;
+
+            $controller = new $controllerName();
+
+            if (method_exists($controller, $methodName)) {
+                $controller->$methodName();
+            } else {
+                echo "Method not found";
+            }
+        } else {
+            echo "Controller not found";
+        }
+
     } else {
-        echo "404 - File not found: " . $file;
+        echo "No controller defined for this route";
     }
 
 } catch (Exception $e) {

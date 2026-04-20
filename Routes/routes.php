@@ -6,7 +6,7 @@ use Symfony\Component\Routing\RouteCollection;
 $routes = new RouteCollection();
 
 $routes->add('register', new Route('/register', [
-    'file' => 'Views/register.php'
+    '_controller' => 'UserController::register'
 ]));
 
 $routes->add('login', new Route('/', [

@@ -17,33 +17,27 @@
             Inventory Management System</p>
         <main class="login-card max-w-sm mx-auto mt-5 py-2 px-4 bg-white rounded-lg shadow-md">
 
-            <section class="brand text-center text-2xl font-bold mb-3">
+            <section class="brand text-center text-2xl font-bold">
                 <h1>Create Account</h1>
             </section>
 
-            <form>
-                <div class="form-group">
-                    <label for="firstname">First Name :</label> <br />
+            <form action="/register" method="POST">
+                <div class="form-group mt-1">
+                    <label for="username">User Name :</label> <br />
                     <input type="text"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        id="firstname" name="firstname" placeholder="Enter your first name" required>
+                        id="username" name="username" placeholder="Enter your user name" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="lastname">Last Name :</label> <br />
-                    <input type="text"
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        id="lastname" name="lastname" placeholder="Enter your last name" required>
-                </div>
 
-                <div class="form-group">
+                <div class="form-group mt-1">
                     <label for="email">Email Address :</label> <br />
                     <input type="email"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                         id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-1">
                     <label for="password">Password</label> <br />
                     <input type="password"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -51,7 +45,7 @@
                         required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group mt-1">
                     <label for="confirm_password">Confirm Password</label> <br />
                     <input type="password"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
