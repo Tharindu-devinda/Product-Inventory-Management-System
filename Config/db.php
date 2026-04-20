@@ -1,3 +1,4 @@
+<?php
 class DbConnector
 {
     private $host = 'localhost';
@@ -17,3 +18,5 @@ class DbConnector
         }
     }
 }
+
+?>
