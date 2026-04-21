@@ -1,4 +1,5 @@
 <?php
+namespace Config;
 class DbConnector
 {
     private $host = 'localhost';

@@ -2,7 +2,10 @@
     "name": "acer/product_inventory_management_system",
     "autoload": {
         "psr-4": {
-            "Acer\\ProductInventoryManagementSystem\\": "/"
+            "Core\\": "Core/",
+            "Controllers\\": "Controllers/",
+            "Models\\": "Models/",
+            "Config\\": "Config/"
         }
     },
     "authors": [

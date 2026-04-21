@@ -1,5 +1,9 @@
 <?php
-require_once __DIR__ . '/../Config/db.php';
+
+namespace Models;
+
+use Config\DbConnector;
+
 class User
 {
 

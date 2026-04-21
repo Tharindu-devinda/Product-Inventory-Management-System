@@ -25,7 +25,7 @@
                 <p class="text-green-600 text-center"><?= $success ?></p>
             <?php endif; ?>
 
-            <form action="/register/store_user" method="POST">
+            <form action="/register/store-user" method="POST">
                 <div class="form-group mt-1">
                     <label for="username">User Name :</label> <br />
                     <input type="text" minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+"
