@@ -6,7 +6,6 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\HttpFoundation\Request;
 
-//Load routes
 $routes = require __DIR__ . '/Routes/routes.php';
 
 //Get information about the current request
