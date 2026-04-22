@@ -15,18 +15,19 @@ class User
         $this->conn = $db->connect();
     }
 
-    public function createUser($username, $email, $passwordHash)
+    public function createUser($username, $email, $passwordHash, $role)
     {
 
-        $sql = "INSERT INTO users (username, email, password)
-                VALUES (:username, :email, :password)";
+        $sql = "INSERT INTO users (username, email, password, role)
+                VALUES (:username, :email, :password, :role)";
 
         $stmt = $this->conn->prepare($sql);
 
         return $stmt->execute([
             ':username' => $username,
             ':email' => $email,
-            ':password' => $passwordHash
+            ':password' => $passwordHash,
+            ':role' => $role
         ]);
     }
 
@@ -37,6 +38,6 @@ class User
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':email' => $email]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }

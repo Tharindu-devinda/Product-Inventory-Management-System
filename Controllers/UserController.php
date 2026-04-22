@@ -9,8 +9,6 @@ class UserController extends Controller
     {
         $this->view('register');
     }
-
-
     public function update()
     {
         var_dump('update method called');
@@ -25,20 +23,15 @@ class UserController extends Controller
 
     public function store()
     {
-        $errors = [];
-        $old = [];
+        try {
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $errors = [];
 
-            $username = trim($_POST['username']);
-            $email = trim($_POST['email']);
-            $password = trim($_POST['password']);
-            $confirm = trim($_POST['confirm_password']);
-
-            $old = [
-                'username' => $username,
-                'email' => $email
-            ];
+            $username = trim($_POST['username'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = trim($_POST['password'] ?? '');
+            $confirm = trim($_POST['confirm_password'] ?? '');
+            $role = trim($_POST['role'] ?? '');
 
             //Validation
             if (empty($username)) {
@@ -61,29 +54,36 @@ class UserController extends Controller
                 $errors['confirm_password'] = 'Passwords do not match';
             }
 
+            if (empty($role)) {
+                $errors['role'] = 'Role is required';
+            }
+
             $userModel = new User();
 
-            if ($userModel->emailExists($email)) {
+            if (empty($errors['email']) && $userModel->emailExists($email)) {
                 $errors['email'] = 'Email already exists';
             }
 
+            //return errors if any
             if (!empty($errors)) {
-                return $this->view('register', [
-                    'errors' => $errors,
-                    'old' => $old
-                ]);
+                $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
+                return;
             }
 
             //Hash password
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
             //Save to DB
-            $result = $userModel->createUser($username, $email, $passwordHash);
+            $result = $userModel->createUser($username, $email, $passwordHash, $role);
+
             if ($result) {
-                return $this->view('register', [
-                    'success' => 'User registered successfully!'
-                ]);
+                $this->jsonResponse(true, 'User registered successfully');
+            } else {
+                $this->jsonResponse(false, 'Failed to register user');
             }
+        } catch (Exception $e) {
+            $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
+
     }
 }

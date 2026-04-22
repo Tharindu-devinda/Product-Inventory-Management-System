@@ -25,22 +25,22 @@
                 <p class="text-green-600 text-center"><?= $success ?></p>
             <?php endif; ?>
 
-            <form action="/register/store-user" method="POST">
+            <form id="registerForm">
                 <div class="form-group mt-1">
                     <label for="username">User Name :</label> <br />
-                    <input type="text" minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+"
-                        value="<?= $old['username'] ?? '' ?>"
+                    <input type="text" id="username" name="username" minlength="3" maxlength="20"
+                        pattern="[a-zA-Z0-9_]+" value="<?= $old['username'] ?? '' ?>"
                         title="Only letters, numbers, underscore. Min 3 characters." class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2
-                    focus:ring-amber-500" id="username" name="username" placeholder="Enter your user name" required>
+                    focus:ring-amber-500" placeholder="Enter your user name" required>
                     <small class="text-red-500"> <?= $errors['username'] ?? '' ?> </small>
                 </div>
 
 
                 <div class="form-group mt-1">
                     <label for="email">Email Address :</label> <br />
-                    <input type="email" value="<?= $old['email'] ?? '' ?>" class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2
-                    focus:ring-amber-500" id="email" name="email" placeholder="example@gmail.com" autocomplete="email"
-                        minlength="6" pattern=".{6,}" title="Minimum 6 characters required" required>
+                    <input type="email" id="email" name="email" value="<?= $old['email'] ?? '' ?>" class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2
+                    focus:ring-amber-500" placeholder="example@gmail.com" autocomplete="email" minlength="6"
+                        pattern=".{6,}" title="Minimum 6 characters required" required>
                     <small class="text-red-500"> <?= $errors['email'] ?? '' ?> </small>
                 </div>
 
@@ -62,6 +62,19 @@
                     <small class="text-red-500"> <?= $errors['confirm_password'] ?? '' ?> </small>
                 </div>
 
+                <div class="form-group mt-1">
+                    <label for="role">User Role :</label> <br />
+                    <select id="role" name="role"
+                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        required>
+                        <option value="">-- Select Role --</option>
+                        <option value="super_admin">Super Admin</option>
+                        <option value="admin">Admin</option>
+                        <option value="employee">Employee</option>
+                    </select>
+                    <small class="text-red-500"> <?= $errors['role'] ?? '' ?> </small>
+                </div>
+
                 <p id="error" style="color:red;"></p>
 
                 <button class="btn bg-amber-500 hover:bg-amber-600 mt-3 text-white font-bold py-2 px-4 rounded w-full"
@@ -70,19 +83,63 @@
         </main>
     </div>
     <script>
-        document.querySelector("form").addEventListener("submit", function (e) {
+        document.getElementById("registerForm").addEventListener("submit", function (e) {
+            e.preventDefault();  // Prevent page reload
 
             let password = document.getElementById("password").value;
             let confirmPassword = document.getElementById("confirm_password").value;
             let error = document.getElementById("error");
 
-            if (password !== confirmPassword) {
-                error.textContent = "Passwords do not match";
-                e.preventDefault();
-            } else {
-                error.textContent = "";
-            }
+            // Clear previous errors before validation
+            error.textContent = "";
+            document.querySelectorAll('small.text-red-500').forEach(small => {
+                small.textContent = '';
+            });
 
+            // Create FormData from the form
+            let formData = new FormData(this);
+
+            // Send AJAX request
+            fetch("/users/store", {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear previous errors first
+                    document.querySelectorAll('small.text-red-500').forEach(small => {
+                        small.textContent = '';
+                    });
+
+                    if (data.success) {
+                        error.textContent = "";
+                        const successMsg = document.createElement('p');
+                        successMsg.className = 'text-green-600 text-center';
+                        successMsg.textContent = data.message;
+                        document.querySelector('form').parentElement.insertBefore(successMsg, document.querySelector('form'));
+                        document.getElementById("registerForm").reset();  // Clear form
+
+                        // Remove success message after 3 seconds
+                        setTimeout(() => {
+                            successMsg.remove();
+                        }, 3000);  // 3000 milliseconds = 3 seconds
+                    } else {
+                        // Show validation errors
+                        if (data.errors) {
+                            console.log('Errors:', data.errors);  // Debug log
+                            Object.keys(data.errors).forEach(field => {
+                                const input = document.querySelector(`[name="${field}"]`);
+                                if (input) {
+                                    const smallError = input.parentElement.querySelector('small');
+                                    if (smallError) {
+                                        smallError.textContent = data.errors[field];
+                                    }
+                                }
+                            });
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     </script>
 </body>

@@ -7,14 +7,14 @@ class DbConnector
     private $username = 'root';
     private $password = '';
 
-    public function connect()
+    public function connect(): \PDO
     {
         $dsn = "mysql:host={$this->host};dbname={$this->db_name}";
 
         try {
-            $conn = new PDO($dsn, $this->username, $this->password);
+            $conn = new \PDO($dsn, $this->username, $this->password);
             return $conn;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
     }
