@@ -8,7 +8,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $this->view('register');
+       return $this->view('register');
     }
 
     public function store(Request $request)
@@ -56,7 +56,7 @@ class UserController extends Controller
 
             //return errors if any
             if (!empty($errors)) {
-                $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
+                echo $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
                 return;
             }
 
@@ -67,7 +67,7 @@ class UserController extends Controller
             $result = $userModel->createUser($username, $email, $passwordHash, $role);
 
             if ($result) {
-                $this->jsonResponse(true, 'User registered successfully');
+                echo $this->jsonResponse(true, 'User registered successfully');
             } else {
                 $this->jsonResponse(false, 'Failed to register user');
             }

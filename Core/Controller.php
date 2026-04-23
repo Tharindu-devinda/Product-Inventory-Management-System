@@ -16,13 +16,12 @@ class Controller
         // Get the output and stop capturing
         $content = ob_get_clean();
 
-        // Return or echo the content
-        echo $content;
+        // Return the content
+        return $content;
     }
 
     protected function jsonResponse($success, $message, $data = [])
     {
-        header('Content-Type: application/json');
         $response = [
             'success' => $success,
             'message' => $message
@@ -30,10 +29,9 @@ class Controller
 
         // Merge additional data if provided for show validation errors
         if (!empty($data)) {
-            $response= array_merge($response, $data);
+            $response = array_merge($response, $data);
         }
 
-        echo json_encode($response);
-        return;
+        return json_encode($response);
     }
 }

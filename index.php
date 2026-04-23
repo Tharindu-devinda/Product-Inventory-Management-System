@@ -49,7 +49,17 @@ try {
             $controller = new $controllerName();
 
             if (method_exists($controller, $methodName)) {
-                $controller->$methodName($request);
+                $output = $controller->$methodName($request);
+
+                if ($output !== null) {
+                    // Check if it's JSON
+                    if (json_decode($output, true) !== null) {
+                        header('Content-Type: application/json');
+                    } else {
+                        header('Content-Type: text/html; charset=UTF-8');
+                    }
+                    echo $output;
+                }
             } else {
                 echo "Method not found";
             }
