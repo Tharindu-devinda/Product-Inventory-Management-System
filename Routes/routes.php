@@ -15,13 +15,11 @@ $routes->add('register_store', new Route('/users/store', [
 
 $routes->add('register_update', new Route('/users/update', [
     '_controller' => 'UserController::update',
-    'methods' => ['POST']
-]));
+], [], [], '', [], ['POST']));
 
 $routes->add('register_delete', new Route('/users/delete', [
     '_controller' => 'UserController::delete',
-    'methods' => ['POST']
-]));
+], [], [], '', [], ['POST']));
 
 $routes->add('login', new Route('/', [
     'file' => 'Views/login.php'

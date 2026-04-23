@@ -2,6 +2,7 @@
 
 use Core\Controller;
 use Models\User;
+use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends Controller
 {
@@ -9,29 +10,18 @@ class UserController extends Controller
     {
         $this->view('register');
     }
-    public function update()
-    {
-        var_dump('update method called');
-        exit;
-    }
 
-    public function delete()
-    {
-        var_dump('delete method called');
-        exit;
-    }
-
-    public function store()
+    public function store(Request $request)
     {
         try {
 
             $errors = [];
 
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = trim($_POST['password'] ?? '');
-            $confirm = trim($_POST['confirm_password'] ?? '');
-            $role = trim($_POST['role'] ?? '');
+            $username = trim($request->request->get('username') ?? '');
+            $email = trim($request->request->get('email') ?? '');
+            $password = trim($request->request->get('password') ?? '');
+            $confirm = trim($request->request->get('confirm_password') ?? '');
+            $role = trim($request->request->get('role') ?? '');
 
             //Validation
             if (empty($username)) {
@@ -85,5 +75,16 @@ class UserController extends Controller
             $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
 
+    }
+    public function update()
+    {
+        var_dump('update method called');
+        exit;
+    }
+
+    public function delete()
+    {
+        var_dump('delete method called');
+        exit;
     }
 }

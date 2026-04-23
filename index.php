@@ -49,7 +49,7 @@ try {
             $controller = new $controllerName();
 
             if (method_exists($controller, $methodName)) {
-                $controller->$methodName();
+                $controller->$methodName($request);
             } else {
                 echo "Method not found";
             }
