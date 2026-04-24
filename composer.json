@@ -5,7 +5,8 @@
             "Core\\": "Core/",
             "Controllers\\": "Controllers/",
             "Models\\": "Models/",
-            "Config\\": "Config/"
+            "Config\\": "Config/",
+            "Validators\\": "Validators/"
         }
     },
     "authors": [

@@ -34,4 +34,9 @@ class Controller
 
         return json_encode($response);
     }
+
+    protected function normalizeInput($input)
+    {
+        return trim($input ?? '');
+    }
 }

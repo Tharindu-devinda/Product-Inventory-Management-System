@@ -2,13 +2,16 @@
 
 use Core\Controller;
 use Models\User;
+use Validators\UserValidator;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 class UserController extends Controller
 {
     public function index()
     {
-       return $this->view('register');
+        return $this->view('register');
     }
 
     public function store(Request $request)
@@ -17,42 +20,23 @@ class UserController extends Controller
 
             $errors = [];
 
-            $username = trim($request->request->get('username') ?? '');
-            $email = trim($request->request->get('email') ?? '');
-            $password = trim($request->request->get('password') ?? '');
-            $confirm = trim($request->request->get('confirm_password') ?? '');
-            $role = trim($request->request->get('role') ?? '');
-
-            //Validation
-            if (empty($username)) {
-                $errors['username'] = 'Username is required';
-            }
-
-            if (empty($email)) {
-                $errors['email'] = 'Email is required';
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors['email'] = 'Invalid email format';
-            }
-
-            if (empty($password)) {
-                $errors['password'] = 'Password is required';
-            } else if (strlen($password) < 6) {
-                $errors['password'] = 'Password must be at least 6 characters';
-            }
-
-            if ($password !== $confirm) {
-                $errors['confirm_password'] = 'Passwords do not match';
-            }
-
-            if (empty($role)) {
-                $errors['role'] = 'Role is required';
-            }
+            $username = $this->normalizeInput($request->request->get('username'));
+            $email = $this->normalizeInput($request->request->get('email'));
+            $password = $this->normalizeInput($request->request->get('password'));
+            $confirm = $this->normalizeInput($request->request->get('confirm_password'));
+            $role = $this->normalizeInput($request->request->get('role'));
 
             $userModel = new User();
 
-            if (empty($errors['email']) && $userModel->emailExists($email)) {
-                $errors['email'] = 'Email already exists';
-            }
+            //Validation
+            $validator = new UserValidator([
+                'username' => $username,
+                'email' => $email,
+                'password' => $password,
+                'confirm_password' => $confirm,
+                'role' => $role
+            ], $userModel);
+            $errors = $validator->validate();
 
             //return errors if any
             if (!empty($errors)) {
@@ -69,10 +53,10 @@ class UserController extends Controller
             if ($result) {
                 echo $this->jsonResponse(true, 'User registered successfully');
             } else {
-                $this->jsonResponse(false, 'Failed to register user');
+                echo $this->jsonResponse(false, 'Failed to register user');
             }
         } catch (Exception $e) {
-            $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
+            echo $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
 
     }
@@ -88,3 +72,23 @@ class UserController extends Controller
         exit;
     }
 }
+
+// Helper function to create routes
+function addRoute($routes, $name, $path, $controller, $methods = ['GET'])
+{
+    $routes->add($name, new Route($path, [
+        '_controller' => $controller
+    ], [], [], '', [], $methods));
+}
+
+// Add routes
+addRoute($routes, 'register_view', '/users', 'UserController::index');
+addRoute($routes, 'register_store', '/users/store', 'UserController::store', ['POST']);
+addRoute($routes, 'register_update', '/users/update', 'UserController::update', ['POST']);
+addRoute($routes, 'register_delete', '/users/delete', 'UserController::delete', ['POST']);
+
+// Static views (can be handled differently)
+$routes->add('login', new Route('/', ['file' => 'Views/login.php']));
+$routes->add('dashboard', new Route('/dashboard', ['file' => 'Views/dashboard.php']));
+
+return $routes;

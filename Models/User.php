@@ -40,4 +40,12 @@ class User
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+    public function usernameExists($username)
+    {
+        $sql = "SELECT id FROM users WHERE username = :username AND deleted_at IS NULL";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':username' => $username]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 }
