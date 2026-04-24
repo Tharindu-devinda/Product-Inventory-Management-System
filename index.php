@@ -1,12 +1,11 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/Config/db.php';
+require_once __DIR__ . '/Config/DbConnector.php';
 
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\HttpFoundation\Request;
 
-//Load routes
 $routes = require __DIR__ . '/Routes/routes.php';
 
 //Get information about the current request
@@ -36,14 +35,40 @@ try {
     //Find which route matches the current URL
     $params = $matcher->match($pathInfo);
 
-    // Get the file path from the matched route
-    $file = __DIR__ . '/' . $params['file'];
+    if (isset($params['_controller'])) {
 
-    //Check if the file exists and include it
-    if (file_exists($file)) {
-        include $file; 
+        // Example: UserController::register
+        list($controllerName, $methodName) = explode('::', $params['_controller']);
+
+        // Build full class name (adjust namespace if you use one)
+        $controllerFile = __DIR__ . '/Controllers/' . $controllerName . '.php';
+
+        if (file_exists($controllerFile)) {
+            require_once $controllerFile;
+
+            $controller = new $controllerName();
+
+            if (method_exists($controller, $methodName)) {
+                $output = $controller->$methodName($request);
+
+                if ($output !== null) {
+                    // Check if it's JSON
+                    if (json_decode($output, true) !== null) {
+                        header('Content-Type: application/json');
+                    } else {
+                        header('Content-Type: text/html; charset=UTF-8');
+                    }
+                    echo $output;
+                }
+            } else {
+                echo "Method not found";
+            }
+        } else {
+            echo "Controller not found";
+        }
+
     } else {
-        echo "404 - File not found: " . $file;
+        echo "No controller defined for this route";
     }
 
 } catch (Exception $e) {
