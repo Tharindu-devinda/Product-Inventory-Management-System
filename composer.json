@@ -6,7 +6,8 @@
             "Controllers\\": "Controllers/",
             "Models\\": "Models/",
             "Config\\": "Config/",
-            "Validators\\": "Validators/"
+            "Validators\\": "Validators/",
+            "Traits\\": "Traits/"
         }
     },
     "authors": [

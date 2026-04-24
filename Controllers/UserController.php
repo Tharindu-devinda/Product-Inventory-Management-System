@@ -2,6 +2,7 @@
 
 use Core\Controller;
 use Models\User;
+use Traits\InputNormalizer;
 use Validators\UserValidator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
@@ -9,6 +10,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class UserController extends Controller
 {
+    use InputNormalizer;
     public function index()
     {
         return $this->view('register');
@@ -20,22 +22,21 @@ class UserController extends Controller
 
             $errors = [];
 
-            $username = $this->normalizeInput($request->request->get('username'));
-            $email = $this->normalizeInput($request->request->get('email'));
-            $password = $this->normalizeInput($request->request->get('password'));
-            $confirm = $this->normalizeInput($request->request->get('confirm_password'));
-            $role = $this->normalizeInput($request->request->get('role'));
+            $inputs = $this->normalizeInputs(
+                $request,
+                [
+                    'username',
+                    'email',
+                    'password',
+                    'confirm_password',
+                    'role'
+                ]
+            );
 
             $userModel = new User();
 
             //Validation
-            $validator = new UserValidator([
-                'username' => $username,
-                'email' => $email,
-                'password' => $password,
-                'confirm_password' => $confirm,
-                'role' => $role
-            ], $userModel);
+            $validator = new UserValidator($inputs, $userModel);
             $errors = $validator->validate();
 
             //return errors if any
@@ -45,10 +46,10 @@ class UserController extends Controller
             }
 
             //Hash password
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            $passwordHash = password_hash($inputs['password'], PASSWORD_DEFAULT);
 
             //Save to DB
-            $result = $userModel->createUser($username, $email, $passwordHash, $role);
+            $result = $userModel->createUser($inputs['username'], $inputs['email'], $passwordHash, $inputs['role']);
 
             if ($result) {
                 echo $this->jsonResponse(true, 'User registered successfully');
