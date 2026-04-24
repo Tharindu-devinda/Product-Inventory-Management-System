@@ -5,8 +5,6 @@ use Models\User;
 use Traits\InputNormalizer;
 use Validators\UserValidator;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 
 class UserController extends Controller
 {
@@ -73,23 +71,3 @@ class UserController extends Controller
         exit;
     }
 }
-
-// Helper function to create routes
-function addRoute($routes, $name, $path, $controller, $methods = ['GET'])
-{
-    $routes->add($name, new Route($path, [
-        '_controller' => $controller
-    ], [], [], '', [], $methods));
-}
-
-// Add routes
-addRoute($routes, 'register_view', '/users', 'UserController::index');
-addRoute($routes, 'register_store', '/users/store', 'UserController::store', ['POST']);
-addRoute($routes, 'register_update', '/users/update', 'UserController::update', ['POST']);
-addRoute($routes, 'register_delete', '/users/delete', 'UserController::delete', ['POST']);
-
-// Static views (can be handled differently)
-$routes->add('login', new Route('/', ['file' => 'Views/login.php']));
-$routes->add('dashboard', new Route('/dashboard', ['file' => 'Views/dashboard.php']));
-
-return $routes;
