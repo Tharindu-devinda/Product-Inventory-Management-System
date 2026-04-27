@@ -1,23 +1,17 @@
 <?php
 
-use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Helpers\RouteHelper;
 
 $routes = new RouteCollection();
 
-$routes->add('register', new Route('/register', [
-    'file' => 'Views/register.php'
-]));
+// Create routes using the helper function
+RouteHelper::addRoute($routes, 'register_view', '/users', 'UserController::index');
+RouteHelper::addRoute($routes, 'users_view', '/users-list', 'UserController::list');
+RouteHelper::addRoute($routes, 'register_store', '/users/store', 'UserController::store', ['POST']);
+RouteHelper::addRoute($routes, 'register_update', '/users/update', 'UserController::update', ['POST']);
+RouteHelper::addRoute($routes, 'register_delete', '/users/delete', 'UserController::delete', ['POST']);
 
-$routes->add('login', new Route('/', [
-    'file' => 'Views/login.php'
-]));
-
-$routes->add('dashboard', new Route('/dashboard', [
-    'file' => 'Views/dashboard.php'
-]));
-
-
+RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');
 
 return $routes;
-
