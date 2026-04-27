@@ -7,16 +7,16 @@ class Controller
     {
         extract($data);
 
-        // Start capturing output
+        // Capture view content
         ob_start();
-
-        // Include the view file
         include __DIR__ . '/../Views/' . $view . '.php';
-
-        // Get the output and stop capturing
         $content = ob_get_clean();
 
-        // Return the content
+        // Pass content to layout
+        // ob_start();
+        include __DIR__ . "/../Views/layout.php";
+        // $html = ob_get_clean();
+
         return $content;
     }
 
