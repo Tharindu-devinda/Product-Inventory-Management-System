@@ -70,4 +70,12 @@ class UserController extends Controller
         var_dump('delete method called');
         exit;
     }
+
+    public function list()
+    {
+        $userModel = new User();
+        $users = $userModel->getAllUsers();
+
+        return $this->view('users', ['users' => $users]);
+    }
 }

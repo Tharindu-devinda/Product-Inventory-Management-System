@@ -31,6 +31,13 @@ class User
         ]);
     }
 
+    public function getAllUsers()
+    {
+        $sql = "SELECT id, username, email, role FROM users WHERE deleted_at IS NULL";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     public function emailExists($email)
     {
 
@@ -38,7 +45,7 @@ class User
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':email' => $email]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC)!== false;
     }
     public function usernameExists($username)
     {
@@ -46,6 +53,6 @@ class User
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':username' => $username]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC)!== false;
     }
 }

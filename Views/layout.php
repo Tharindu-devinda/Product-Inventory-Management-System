@@ -20,8 +20,8 @@
                         class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Products</a></li>
                 <li><a href="#"
                         class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Inventory</a></li>
-                <li><a href="#"
-                        class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Reports</a></li>
+                <li><a href="/users-list"
+                        class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Users</a></li>
                 <li><a href="#" class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Logout</a>
                 </li>
             </ul>
