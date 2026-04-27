@@ -80,6 +80,10 @@
                 <button class="btn bg-amber-500 hover:bg-amber-600 mt-3 text-white font-bold py-2 px-4 rounded w-full"
                     type="submit">Register</button>
             </form>
+            <a href="/users-list"
+                class="block mt-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full text-center">
+                Back to Users
+            </a>
         </main>
     </div>
     <script>
