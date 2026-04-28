@@ -32,8 +32,8 @@
                         <?= $user['role'] ?>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                        <a href="#" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
-                        <a href="#" class="bg-red-500 text-white px-3 py-1 rounded">Delete</a>
+                        <a href="/users/<?= $user['id'] ?>/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
+                        <a href="/users/<?= $user['id'] ?>/delete" class="bg-red-500 text-white px-3 py-1 rounded">Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

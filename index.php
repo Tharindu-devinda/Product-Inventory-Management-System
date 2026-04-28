@@ -49,6 +49,13 @@ try {
             $controller = new $controllerName();
 
             if (method_exists($controller, $methodName)) {
+                // Add route parameters to request attributes
+                foreach ($params as $key => $value) {
+                    if ($key !== '_controller') {
+                        $request->attributes->set($key, $value);
+                    }
+                }
+
                 $output = $controller->$methodName($request);
 
                 if ($output !== null) {
