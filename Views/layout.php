@@ -10,7 +10,7 @@
 
 <body class="bg-orange-50">
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-100 bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 shadow-lg">
+    <nav class="sticky top-0 z-100 bg-linear-to-r from-amber-400 via-amber-500 to-orange-500 shadow-lg">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-white text-2xl font-bold">PIM System</a>
             <ul class="flex gap-8 list-none">

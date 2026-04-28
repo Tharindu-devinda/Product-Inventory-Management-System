@@ -1,17 +1,4 @@
-<?php
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Product Inventory Management System</title>
-    <link href="/assets/output.css" rel="stylesheet">
-</head>
-
-<body class="login flex items-center justify-center min-h-screen bg-orange-100">
+<div class="login flex justify-center min-h-screen bg-orange-100">
     <div class="container mx-3">
         <p class="bg-amber-500 max-w-sm mx-auto text-center text-lg font-bold text-white p-2 rounded-lg">Product
             Inventory Management System</p>
@@ -146,6 +133,4 @@
                 .catch(error => console.error('Error:', error));
         });
     </script>
-</body>
-
-</html>
+</div>

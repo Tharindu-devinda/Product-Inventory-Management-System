@@ -18,7 +18,7 @@
         </thead>
         <tbody>
             <?php foreach ($users as $user): ?>
-                <tr class="hover:bg-amber-100">
+                <tr class="hover:bg-orange-100">
                     <td class="border border-gray-300 px-4 py-2">
                         <?= $user['id'] ?>
                     </td>
