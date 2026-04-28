@@ -33,10 +33,32 @@
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
                         <a href="/users/<?= $user['id'] ?>/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
-                        <a href="/users/<?= $user['id'] ?>/delete" class="bg-red-500 text-white px-3 py-1 rounded">Delete</a>
+                        <button data-id="<?= $user['id'] ?>"
+                            class="delete-btn bg-red-500 text-white px-3 py-1 rounded">Delete</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <script>
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (!confirm('Delete this user?')) return;
+                const id = this.dataset.id;
+                fetch(`/users/${id}/delete`, { method: 'POST' })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            // remove row
+                            const row = this.closest('tr');
+                            if (row) row.remove();
+                        } else {
+                            alert(data.message || 'Delete failed');
+                        }
+                    })
+                    .catch(() => alert('Server error'));
+            });
+        });
+    </script>
 </div>

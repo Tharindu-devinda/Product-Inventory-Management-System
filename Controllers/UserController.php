@@ -145,7 +145,20 @@ class UserController extends Controller
 
     public function delete(Request $request)
     {
-        var_dump('delete method called');
-        exit;
+        try {
+            $id = $request->attributes->get('id');
+            $userModel = new User();
+            $user = $userModel->getUserById($id);
+            if (!$user) {
+                return $this->jsonResponse(false, 'User not found');
+            }
+            $deleted = $userModel->softDelete($id);
+            if ($deleted) {
+                return $this->jsonResponse(true, 'User deleted');
+            }
+            return $this->jsonResponse(false, 'Failed to delete user');
+        } catch (Exception $e) {
+            return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
+        }
     }
 }

@@ -110,4 +110,13 @@ class User
     {
         return $this->emailExistsExcept($email, $id) || $this->usernameExistsExcept($username, $id);
     }
+
+    // soft-delete user by id (sets deleted_at)
+    public function softDelete($id)
+    {
+        $sql = "UPDATE users SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return $stmt->rowCount() > 0;
+    }
 }
