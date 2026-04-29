@@ -144,21 +144,20 @@ class UserController extends Controller
     }
 
     public function delete(Request $request)
-    {
-        try {
-            $id = $request->attributes->get('id');
-            $userModel = new User();
-            $user = $userModel->getUserById($id);
-            if (!$user) {
-                return $this->jsonResponse(false, 'User not found');
-            }
-            $deleted = $userModel->softDelete($id);
-            if ($deleted) {
-                return $this->jsonResponse(true, 'User deleted');
-            }
-            return $this->jsonResponse(false, 'Failed to delete user');
-        } catch (Exception $e) {
-            return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
+{
+    try {
+        $id = $request->attributes->get('id');
+        $userModel = new User();
+        $deleted = $userModel->softDelete($id);
+
+        if ($deleted) {
+            return $this->jsonResponse(true, 'User deleted successfully');
+        } else {
+            return $this->jsonResponse(false, 'User not found or already deleted');
         }
+
+    } catch (Exception $e) {
+        return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
     }
+}
 }
