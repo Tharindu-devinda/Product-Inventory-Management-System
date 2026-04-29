@@ -1,3 +1,4 @@
+<!-- User regsitration form with AJAX submission and validation error display -->
 <div class="login flex justify-center min-h-screen pt-5 bg-orange-100">
     <div class="container mx-3">
         <p class="bg-amber-500 max-w-sm mx-auto text-center text-lg font-bold text-white p-2 rounded-lg">Product
@@ -73,6 +74,7 @@
             </a>
         </main>
     </div>
+    <!-- AJAX form submission and error handling -->
     <script>
         document.getElementById("registerForm").addEventListener("submit", function (e) {
             e.preventDefault();  // Prevent page reload
@@ -117,7 +119,6 @@
                     } else {
                         // Show validation errors
                         if (data.errors) {
-                            console.log('Errors:', data.errors);  // Debug log
                             Object.keys(data.errors).forEach(field => {
                                 const input = document.querySelector(`[name="${field}"]`);
                                 if (input) {

@@ -13,6 +13,7 @@ class UserUpdateValidator
         $this->userModel = $userModel;
     }
 
+    // Validate user input for updates,check for empty fields,return an array of errors if any
     public function validate()
     {
         $errors = [];

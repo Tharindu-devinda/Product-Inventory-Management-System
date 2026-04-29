@@ -1,3 +1,4 @@
+<!-- This is the main layout file that includes the navigation bar -->
 <!DOCTYPE html>
 <html lang="en">
 

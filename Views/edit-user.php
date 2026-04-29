@@ -1,4 +1,5 @@
-<div class="py-0 mx-2">
+<!-- Edit User Form -->
+<div class="py-5 mx-2">
     <div class="max-w-sm mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
         <section class="text-center mb-6">
             <h1 class="text-2xl font-bold">Edit User</h1>

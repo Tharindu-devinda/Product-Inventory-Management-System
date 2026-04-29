@@ -1,3 +1,4 @@
+<!--This view displays a list of all users with options to edit or delete each user -->
 <div class="py-5 mx-2">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">All Users</h1>
@@ -54,6 +55,7 @@
         </div>
     </div>
 
+    <!-- JavaScript for handling delete action and showing success message -->
     <script>
         let selectedUserId = null;
         const deleteModal = document.getElementById('deleteModal');

@@ -3,6 +3,7 @@ namespace Core;
 
 class Controller
 {
+    // Render a view with optional data, and return the content
     protected function view($view, $data = [])
     {
         extract($data);
@@ -20,6 +21,7 @@ class Controller
         return $content;
     }
 
+    // Return a JSON response with success status, message, and optional data
     protected function jsonResponse($success, $message, $data = [])
     {
         $response = [

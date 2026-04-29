@@ -85,7 +85,7 @@ class UserController extends Controller
         return $this->view('edit-user', ['user' => $user, 'errors' => [], 'old' => []]);
     }
 
-    // Update user data
+    // Update user data, validate input and return JSON response
     public function update(Request $request)
     {
         try {
@@ -143,6 +143,7 @@ class UserController extends Controller
         }
     }
 
+    // Soft delete user by id,return JSON response
     public function delete(Request $request)
 {
     try {
