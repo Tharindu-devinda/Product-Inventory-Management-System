@@ -1,8 +1,8 @@
-<div class="login flex justify-center min-h-screen bg-orange-100">
+<div class="login flex justify-center min-h-screen pt-5 bg-orange-100">
     <div class="container mx-3">
         <p class="bg-amber-500 max-w-sm mx-auto text-center text-lg font-bold text-white p-2 rounded-lg">Product
             Inventory Management System</p>
-        <main class="login-card max-w-sm mx-auto mt-5 py-2 px-4 bg-white rounded-lg shadow-md">
+        <main class="login-card max-w-sm mx-auto mt-2 py-2 px-4 bg-white rounded-lg shadow-md">
 
             <section class="brand text-center text-2xl font-bold">
                 <h1>Create Account</h1>

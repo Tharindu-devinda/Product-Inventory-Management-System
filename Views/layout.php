@@ -29,7 +29,7 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-6 py-4">
+    <div class="max-w-7xl mx-auto px-6 ">
         <!-- Page content will go here -->
     </div>
 </body>
