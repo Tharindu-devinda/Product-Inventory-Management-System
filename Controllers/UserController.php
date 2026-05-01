@@ -65,13 +65,11 @@ class UserController extends Controller
     // List all users, return an HTML view of users (id, username, email, role)
     public function list()
     {
-        $userModel = new User();
-        $users = $userModel->getAllUsers();
-
-        return $this->view('users', ['users' => $users]);
+        return $this->view('users', ['users' => (new User())->getAllUsers()]);
     }
 
     // Show pre-filled edit form for user with given id
+    // return HTML view or JSON error if user not found
     public function edit(Request $request)
     {
         $id = $request->attributes->get('id');
@@ -82,7 +80,7 @@ class UserController extends Controller
             return $this->jsonResponse(false, 'User not found');
         }
 
-        return $this->view('edit-user', ['user' => $user, 'errors' => [], 'old' => []]);
+        return $this->view('edit-user', ['user' => $user]);
     }
 
     // Update user data, validate input and return JSON response
@@ -101,64 +99,40 @@ class UserController extends Controller
                 return $this->jsonResponse(false, 'User not found');
             }
 
-            // Validate (password fields set to 'dummy' since edit doesn't have password)
-
-            $validator = new UserUpdateValidator([
-                'username' => $inputs['username'],
-                'email' => $inputs['email'],
-                'role' => $inputs['role']
-            ], $userModel);
+            // Validate input (includes format validation and duplicate checks)
+            $validator = new UserUpdateValidator($inputs, $userModel, $user);
             $errors = $validator->validate();
 
             if (!empty($errors)) {
                 return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
             }
 
-            // Check if NEW email already exists for someone else (only if email was changed)
-            $errors = [];
-
-            if ($inputs['email'] !== $user['email'] && $userModel->emailExists($inputs['email'])) {
-                $errors['email'] = 'Email already in use';
-            }
-
-            // Check if NEW username already exists for someone else (only if username was changed)
-            if ($inputs['username'] !== $user['username'] && $userModel->usernameExists($inputs['username'])) {
-                $errors['username'] = 'Username already in use';
-            }
-
-            if (!empty($errors)) {
-                return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
-            }
-
             // Update user
-            $result = $userModel->updateUser($id, $inputs['username'], $inputs['email'], $inputs['role']);
-
-            if ($result) {
+            if ($userModel->updateUser($id, $inputs['username'], $inputs['email'], $inputs['role'])) {
                 return $this->jsonResponse(true, 'User updated successfully');
-            } else {
-                return $this->jsonResponse(false, 'Failed to update user');
             }
+
+            return $this->jsonResponse(false, 'Failed to update user');
         } catch (Exception $e) {
             return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
     }
 
-    // Soft delete user by id,return JSON response
+    // Soft delete user by id
+    // return JSON response indicating success or failure
     public function delete(Request $request)
-{
-    try {
-        $id = $request->attributes->get('id');
-        $userModel = new User();
-        $deleted = $userModel->softDelete($id);
+    {
+        try {
+            $id = $request->attributes->get('id');
 
-        if ($deleted) {
-            return $this->jsonResponse(true, 'User deleted successfully');
-        } else {
-            return $this->jsonResponse(false, 'User not found or already deleted');
+            if ((new User())->softDelete($id)) {
+                return $this->jsonResponse(true, 'User deleted successfully');
+            } else {
+                return $this->jsonResponse(false, 'User not found or already deleted');
+            }
+
+        } catch (Exception $e) {
+            return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
-
-    } catch (Exception $e) {
-        return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
     }
-}
 }

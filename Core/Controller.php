@@ -3,7 +3,7 @@ namespace Core;
 
 class Controller
 {
-    // Render a view with optional data, and return the content
+    // Render a view with optional data, return the rendered HTML content
     protected function view($view, $data = [])
     {
         extract($data);
@@ -37,6 +37,7 @@ class Controller
         return json_encode($response);
     }
 
+    // Normalize a single input value, trim whitespace, return normalized value
     protected function normalizeInput($input)
     {
         return trim($input ?? '');
