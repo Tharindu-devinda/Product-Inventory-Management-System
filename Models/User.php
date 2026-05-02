@@ -16,7 +16,7 @@ class User
     }
 
     // Create a new user, return true on success, false on failure
-    public function createUser($username, $email, $passwordHash, $role)
+    public function createUser(string $username, string $email, string $passwordHash, string $role): bool
     {
 
         $sql = "INSERT INTO users (username, email, password, role)
@@ -34,15 +34,16 @@ class User
 
     // Fetch all users (excluding deleted ones), 
     // return an array of users with id, username, email, and role
-    public function getAllUsers()
+    public function getAllUsers(): array
     {
         $sql = "SELECT id, username, email, role FROM users WHERE deleted_at IS NULL";
         $stmt = $this->conn->query($sql);
+        
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     // Check if email already exists, return true if exists, false otherwise
-    public function emailExists($email)
+    public function emailExists(string $email): bool
     {
 
         $sql = "SELECT id FROM users WHERE email = :email AND deleted_at IS NULL";
@@ -52,7 +53,7 @@ class User
         return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
     }
     // Check if username already exists, return true if exists, false otherwise  
-    public function usernameExists($username)
+    public function usernameExists(string $username): bool
     {
         $sql = "SELECT id FROM users WHERE username = :username AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -62,7 +63,7 @@ class User
     }
 
     // Check if email exists for ANOTHER user (exclude current user by ID)
-    public function emailExistsExcept($email, $id)
+    public function emailExistsExcept(string $email, int $id): bool
     {
         $sql = "SELECT id FROM users WHERE email = :email AND id != :id AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -71,7 +72,7 @@ class User
     }
 
     // Check if username exists for ANOTHER user (exclude current user by ID)
-    public function usernameExistsExcept($username, $id)
+    public function usernameExistsExcept(string $username, int $id): bool
     {
         $sql = "SELECT id FROM users WHERE username = :username AND id != :id AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -80,14 +81,14 @@ class User
     }
 
     //get single user by id, return user data or false if not found
-    public function getUserById($id)
+    public function getUserById(int $id): array|false
     {
         $stmt = $this->conn->prepare("SELECT id, username, email, role FROM users WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
     //update user by id, return true on success, false on failure
-    public function updateUser($id, $username, $email, $role)
+    public function updateUser(int $id, string $username, string $email, string $role): bool
     {
         $sql = "UPDATE users 
             SET username = :username, email = :email, role = :role 
@@ -106,17 +107,18 @@ class User
     }
 
     // checks if email or username exists for ANOTHER user
-    public function existsExceptId($email, $username, $id)
+    public function existsExceptId(string $email, string $username, int $id): bool
     {
         return $this->emailExistsExcept($email, $id) || $this->usernameExistsExcept($username, $id);
     }
 
     // soft-delete user by id (sets deleted_at)
-    public function softDelete($id)
+    public function softDelete(int $id): bool
     {
         $sql = "UPDATE users SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':id' => $id]);
+
         return $stmt->rowCount() > 0;
     }
 }
