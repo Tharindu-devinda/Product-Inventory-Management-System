@@ -7,7 +7,8 @@
             "Models\\": "Models/",
             "Config\\": "Config/",
             "Validators\\": "Validators/",
-            "Traits\\": "Traits/"
+            "Traits\\": "Traits/",
+            "Helpers\\": "Helpers/"
         }
     },
     "authors": [
