@@ -42,4 +42,9 @@ class Controller
     {
         return trim($input ?? '');
     }
+
+    protected function getCurrentUserId(): ?int
+    {
+        return isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null;
+    }
 }

@@ -17,10 +17,10 @@
             <ul class="flex gap-8 list-none">
                 <li><a href="/dashboard"
                         class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Dashboard</a></li>
-                <li><a href="#"
+                <li><a href="/products"
                         class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Products</a></li>
-                <li><a href="#"
-                        class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Inventory</a></li>
+                <li><a href="/orders"
+                        class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Orders</a></li>
                 <li><a href="/users-list"
                         class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Users</a></li>
                 <li><a href="#" class="text-white font-medium hover:bg-white/20 px-4 py-2 rounded transition">Logout</a>

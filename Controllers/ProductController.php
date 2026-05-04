@@ -3,6 +3,7 @@
 use Core\Controller;
 use Models\Product;
 use Traits\InputNormalizer;
+use Validators\ProductUpdateValidator;
 use Validators\ProductValidator;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -93,7 +94,7 @@ class ProductController extends Controller
             }
 
             // Run general validation (format/required/price/etc.)
-            $validator = new ProductValidator($inputs, $productModel);
+            $validator = new ProductUpdateValidator($inputs, $productModel, $product);
             $errors = $validator->validate();
 
             // SKU uniqueness: only if SKU was changed
