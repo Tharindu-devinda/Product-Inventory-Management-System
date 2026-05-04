@@ -52,6 +52,13 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
+
+                <div class="form-group mt-1">
+                    <label for = "images">Product Images :</label>
+                    <input type="file" id="images" name="images[]" multiple
+                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg"
+                        placeholder="Upload product images">
+                </div>
                 <small class="text-red-500"></small>
             </div>
 
