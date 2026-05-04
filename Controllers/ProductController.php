@@ -10,11 +10,6 @@ class ProductController extends Controller
 {
     use InputNormalizer;
 
-    /**
-     * Show product creation form
-     *
-     * @return string HTML view
-     */
     public function index()
     {
         $productModel = new Product();
@@ -23,12 +18,6 @@ class ProductController extends Controller
         return $this->view('create-product', ['suppliers' => $suppliers, 'errors' => [], 'old' => []]);
     }
 
-    /**
-     * Store a new product
-     *
-     * @param Request $request
-     * @return string JSON response
-     */
     public function store(Request $request)
     {
         try {
@@ -51,7 +40,7 @@ class ProductController extends Controller
                 $inputs['price'],
                 $inputs['description'],
                 $inputs['supplier_id'],
-                1  // TODO: Get from authenticated user session
+                1  // todo: Get from authenticated user session
             );
 
             if ($result) {
@@ -64,11 +53,7 @@ class ProductController extends Controller
         }
     }
 
-    /**
-     * Show all products
-     *
-     * @return string HTML view
-     */
+
     public function list()
     {
         $productModel = new Product();
@@ -77,12 +62,70 @@ class ProductController extends Controller
         return $this->view('products', ['products' => $products]);
     }
 
-    /**
-     * Delete product (soft delete)
-     *
-     * @param Request $request
-     * @return string JSON response
-     */
+    public function edit(Request $request)
+    {
+        $id = $request->attributes->get('id');
+        $productModel = new Product();
+        $product = $productModel->getProductById($id);
+
+        if (!$product) {
+            http_response_code(404);
+            echo "Product not found";
+            return;
+        }
+
+        $suppliers = $productModel->getAllSuppliers();
+
+        return $this->view('edit-product', ['product' => $product, 'suppliers' => $suppliers, 'errors' => [], 'old' => []]);
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            $id = $request->attributes->get('id');
+            $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id']);
+
+            $productModel = new Product();
+            $product = $productModel->getProductById($id);
+
+            if (!$product) {
+                return $this->jsonResponse(false, 'Product not found');
+            }
+
+            // Run general validation (format/required/price/etc.)
+            $validator = new ProductValidator($inputs, $productModel);
+            $errors = $validator->validate();
+
+            // SKU uniqueness: only if SKU was changed
+            if (empty($errors) || !isset($errors['sku_code'])) {
+                if ($inputs['sku_code'] !== $product['sku_code'] && $productModel->skuExists($inputs['sku_code'])) {
+                    $errors['sku_code'] = 'SKU code already exists';
+                }
+            }
+
+            if (!empty($errors)) {
+                return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
+            }
+
+            $updated = $productModel->updateProduct(
+                $id,
+                $inputs['name'],
+                $inputs['sku_code'],
+                $inputs['price'],
+                $inputs['description'],
+                $inputs['supplier_id']
+            );
+
+            if ($updated) {
+                return $this->jsonResponse(true, 'Product updated successfully');
+            }
+
+            return $this->jsonResponse(false, 'Failed to update product');
+        } catch (\Exception $e) {
+            return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
+        }
+    }
+
     public function delete(Request $request)
     {
         try {
