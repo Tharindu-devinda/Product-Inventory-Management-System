@@ -13,6 +13,7 @@ class UserValidator
         $this->userModel = $userModel;
     }
 
+    // Validate user input,return an array of errors if any
     public function validate()
     {
         $errors = [];
@@ -33,6 +34,7 @@ class UserValidator
             $errors['password'] = 'Password must be at least 6 characters';
         }
 
+        // Check if password and confirm_password match, return error if they don't
         if ($this->user['password'] !== $this->user['confirm_password']) {
             $errors['confirm_password'] = 'Passwords do not match';
         }

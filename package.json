@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tailwindcss -i ./assets/input.css -o ./assets/output.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
