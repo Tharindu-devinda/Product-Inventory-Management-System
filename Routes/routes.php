@@ -20,6 +20,7 @@ RouteHelper::addRoute($routes, 'product_list', '/products', 'ProductController::
 RouteHelper::addRoute($routes, 'product_edit', '/products/{id}/edit', 'ProductController::edit');
 RouteHelper::addRoute($routes, 'product_update', '/products/{id}/update', 'ProductController::update', ['POST']);
 RouteHelper::addRoute($routes, 'product_delete', '/products/{id}/delete', 'ProductController::delete', ['POST']);
+RouteHelper::addRoute($routes, 'user_delete', '/users/{id}/delete', 'UserController::delete', ['POST']);
 
 RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');
 
