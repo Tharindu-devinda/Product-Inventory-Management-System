@@ -21,7 +21,7 @@
             </thead>
             <tbody>
                 <?php foreach ($products as $p): ?>
-                    <tr class="hover:bg-orange-100">
+                    <tr class="hover:bg-orange-100 cursor-pointer product-row" data-id="<?= $p['id'] ?>">
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['id']) ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['name'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['sku_code'] ?? '') ?></td>
@@ -46,6 +46,19 @@
             <div class="flex justify-end gap-2">
                 <button id="cancelBtn" class="px-3 py-1 bg-gray-300 rounded">Cancel</button>
                 <button id="confirmDeleteBtn" class="px-3 py-1 bg-red-500 text-white rounded">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT DETAILS MODAL -->
+    <div id="productModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-1/2 relative">
+            <button id="closeModal" class="absolute top-1 right-2 text-3xl">&times;</button>
+
+            <h2 class="text-xl font-bold mb-4">Product Details</h2>
+
+            <div id="modalContent">
+                <!-- Data will be loaded here -->
             </div>
         </div>
     </div>
@@ -103,6 +116,47 @@
                     console.error('Error:', err);
                     alert('Server error');
                 });
+        });
+
+        // Open product modal on click
+        document.querySelectorAll('.product-row').forEach(row => {
+            row.addEventListener('click', function () {
+
+                const productId = this.dataset.id;
+
+                fetch(`/products/${productId}`)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data.success) {
+
+                            const product = data.product;
+
+                            document.getElementById('modalContent').innerHTML = `
+                        <p><strong>Name:</strong> ${product.name}</p>
+                        <p><strong>SKU:</strong> ${product.sku_code}</p>
+                        <p><strong>Price:</strong> ${product.price}</p>
+                        <p><strong>Description:</strong> ${product.description ?? ''}</p>
+                    `;
+
+                            document.getElementById('productModal').classList.remove('hidden');
+                            document.getElementById('productModal').classList.add('flex');
+
+                        }
+                    });
+            });
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('productModal').classList.add('hidden');
+        });
+
+        // also close when clicking outside the content box
+        document.getElementById('productModal').addEventListener('click', (e) => {
+            if (e.target.id === 'productModal') {
+                e.currentTarget.classList.add('hidden');
+                e.currentTarget.classList.remove('flex');
+            }
         });
     </script>
 </div>

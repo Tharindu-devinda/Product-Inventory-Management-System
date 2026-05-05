@@ -143,4 +143,17 @@ class ProductController extends Controller
             return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
     }
+
+    public function show(Request $request)
+    {
+        $id = $request->attributes->get('id');
+        $productModel = new Product();
+        $product = $productModel->getProductById($id);
+
+        if (!$product) {
+            return $this->jsonResponse(false, 'Product not found');
+        }
+
+        return $this->jsonResponse(true, '', ['product' => $product]);
+    }
 }

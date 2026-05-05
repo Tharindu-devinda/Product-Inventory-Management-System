@@ -24,6 +24,8 @@ RouteHelper::addRoute($routes, 'product_update', '/products/{id}/update', 'Produ
 RouteHelper::addRoute($routes, 'product_delete', '/products/{id}/delete', 'ProductController::delete', ['POST']);
 RouteHelper::addRoute($routes, 'user_delete', '/users/{id}/delete', 'UserController::delete', ['POST']);
 
+RouteHelper::addRoute($routes, 'product_show', '/products/{id}', 'ProductController::show');
+
 //dashboard routes
 RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');
 
