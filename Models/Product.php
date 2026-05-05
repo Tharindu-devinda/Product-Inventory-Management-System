@@ -101,4 +101,17 @@ class Product
         $stmt->execute([':id' => $id]);
         return $stmt->rowCount() > 0;
     }
+
+    // Get product images
+    public function getProductImages(int $productId): array
+    {
+        $uploadDir = dirname(__DIR__) . '/public/images/product-images/' . $productId;
+
+        if (!is_dir($uploadDir)) {
+            return [];
+        }
+
+        $files = array_diff(scandir($uploadDir), ['.', '..']);
+        return array_values($files);
+    }
 }

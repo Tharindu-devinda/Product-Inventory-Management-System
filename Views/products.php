@@ -87,7 +87,6 @@
 
             // CONFIRM DELETE
             $('#confirmDeleteBtn').on('click', function () {
-
                 $.ajax({
                     url: `/products/${selectedProductId}/delete`,
                     method: 'POST',
@@ -146,11 +145,24 @@
                             let p = data.product;
 
                             $('#modalContent').html(`
-                        <p><strong>Name:</strong> ${p.name}</p>
-                        <p><strong>SKU:</strong> ${p.sku_code}</p>
-                        <p><strong>Price:</strong> ${p.price}</p>
-                        <p><strong>Description:</strong> ${p.description ?? ''}</p>
-                    `);
+                                <p><strong>Name:</strong> ${p.name}</p>
+                                <p><strong>SKU:</strong> ${p.sku_code}</p>
+                                <p><strong>Price:</strong> ${p.price}</p>
+                                <p><strong>Description:</strong> ${p.description ?? ''}</p>
+                                ${p.images && p.images.length ? `
+                                    <div class="mt-4">
+                                        <p><strong>Images:</strong></p>
+                                        <div class="grid grid-cols-3 gap-3">
+                                            ${p.images.slice(0, 5).map(img => `
+                                                <div class="bg-gray-100 rounded-lg overflow-hidden shadow">
+                                                    <img src="${img}" alt="Product" class="w-full h-32 object-contain bg-white hover:scale-105 transition-transform">
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        ${p.images.length > 5 ? `<p class="text-sm text-gray-500 mt-2">+${p.images.length - 5} more images</p>` : ''}
+                                    </div>
+                                ` : '<p class="text-gray-500 mt-4">No images</p>'}
+                            `);
 
                             $('#productModal').removeClass('hidden').addClass('flex');
                         }
