@@ -15,14 +15,14 @@ class Product
     }
 
     // Create a new product
-    public function createProduct($name, $skuCode, $price, $description, $supplierId, $userId)
+    public function createProduct(string $name, string $skuCode, float $price, string $description, int $supplierId, int $userId): int|false
     {
         $sql = "INSERT INTO product (name, sku_code, price, description, supplier_id, user_id)
-                VALUES (:name, :sku_code, :price, :description, :supplier_id, :user_id)";
+            VALUES (:name, :sku_code, :price, :description, :supplier_id, :user_id)";
 
         $stmt = $this->conn->prepare($sql);
 
-        return $stmt->execute([
+        $success = $stmt->execute([
             ':name' => $name,
             ':sku_code' => $skuCode,
             ':price' => $price,
@@ -30,6 +30,12 @@ class Product
             ':supplier_id' => $supplierId,
             ':user_id' => $userId
         ]);
+
+        if ($success) {
+            return (int) $this->conn->lastInsertId();
+        }
+
+        return false;
     }
 
     // Get all products (excluding soft deleted)

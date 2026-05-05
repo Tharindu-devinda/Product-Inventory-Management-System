@@ -4,11 +4,10 @@
             <h1 class="text-2xl font-bold">Create Product</h1>
         </section>
 
-        <form id="productForm">
+        <form id="productForm" enctype="multipart/form-data">
             <div class="form-group mt-1">
                 <label for="name">Product Name :</label>
-                <input type="text" id="name" name="name" minlength="3" maxlength="100"
-                    value="<?= $old['name'] ?? '' ?>"
+                <input type="text" id="name" name="name" minlength="3" maxlength="100" value="<?= $old['name'] ?? '' ?>"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter product name" required>
                 <small class="text-red-500"></small>
@@ -25,8 +24,7 @@
 
             <div class="form-group mt-1">
                 <label for="price">Price :</label>
-                <input type="number" id="price" name="price" step="0.01" min="0"
-                    value="<?= $old['price'] ?? '' ?>"
+                <input type="number" id="price" name="price" step="0.01" min="0" value="<?= $old['price'] ?? '' ?>"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter product price" required>
                 <small class="text-red-500"></small>
@@ -54,15 +52,15 @@
                 </select>
 
                 <div class="form-group mt-1">
-                    <label for = "images">Product Images :</label>
+                    <label for="images">Product Images :</label>
                     <input type="file" id="images" name="images[]" multiple
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg"
-                        placeholder="Upload product images">
+                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg" placeholder="Upload product images">
                 </div>
                 <small class="text-red-500"></small>
             </div>
 
-            <button type="submit" class="btn bg-amber-500 hover:bg-amber-600 mt-4 text-white font-bold py-2 px-4 rounded w-full">
+            <button type="submit"
+                class="btn bg-amber-500 hover:bg-amber-600 mt-4 text-white font-bold py-2 px-4 rounded w-full">
                 Create Product
             </button>
         </form>

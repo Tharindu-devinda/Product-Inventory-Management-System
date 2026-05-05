@@ -26,7 +26,6 @@ class ProductController extends Controller
 
             $productModel = new Product();
 
-            // Validation
             $validator = new ProductValidator($inputs, $productModel);
             $errors = $validator->validate();
 
@@ -34,8 +33,9 @@ class ProductController extends Controller
                 return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
             }
 
-            // Save to DB (user_id = 1 for now, ideally from session)
-            $result = $productModel->createProduct(
+            $images = $_FILES['images'] ?? null;
+
+            $productId = $productModel->createProduct(
                 $inputs['name'],
                 $inputs['sku_code'],
                 $inputs['price'],
@@ -44,16 +44,54 @@ class ProductController extends Controller
                 1  // todo: Get from authenticated user session
             );
 
-            if ($result) {
-                return $this->jsonResponse(true, 'Product created successfully');
-            } else {
+            if (!$productId) {
                 return $this->jsonResponse(false, 'Failed to create product');
             }
+
+            // handle uploaded images
+            $uploadDir = __DIR__ . '/../public/images/product-images/' . $productId;
+
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            if ($images && !empty($images['name'][0])) {
+
+                // Limit max 5 images
+                if (count($images['name']) > 5) {
+                    return $this->jsonResponse(false, 'Max 5 images allowed');
+                }
+
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+                foreach ($images['name'] as $key => $name) {
+
+                    if ($images['error'][$key] === 0) {
+
+                        if (!in_array($images['type'][$key], $allowedTypes)) {
+                            continue;
+                        }
+
+                        if ($images['size'][$key] > 2 * 1024 * 1024) {
+                            continue;
+                        }
+
+                        $tmpName = $images['tmp_name'][$key];
+
+                        $ext = pathinfo($name, PATHINFO_EXTENSION);
+                        $fileName = uniqid('img_', true) . '.' . $ext;
+
+                        $destination = $uploadDir . '/' . $fileName;
+
+                        move_uploaded_file($tmpName, $destination);
+                    }
+                }
+            }
+            return $this->jsonResponse(true, 'Product created successfully');
         } catch (\Exception $e) {
             return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
     }
-
 
     public function list()
     {
