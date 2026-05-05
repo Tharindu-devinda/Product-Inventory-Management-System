@@ -28,11 +28,12 @@
             </ul>
         </div>
     </nav>
-
+    <script src="/assets/js/jquery.min.js"></script>
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-6 ">
         <!-- Page content will go here -->
     </div>
+
 </body>
 
 </html>

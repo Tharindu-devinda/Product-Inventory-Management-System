@@ -1,7 +1,8 @@
 <div class="py-5 mx-2">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">All Products</h1>
-        <a href="/products/create" class="bg-amber-400 hover:bg-amber-500 text-white font-bold px-6 py-2 rounded">
+        <a href="/products/create" class="bg-amber-400 hover:bg-amber-500
+         text-white font-bold px-6 py-2 rounded">
             + Create Product
         </a>
     </div>
@@ -21,9 +22,14 @@
             </thead>
             <tbody>
                 <?php foreach ($products as $p): ?>
-                    <tr class="hover:bg-orange-100 cursor-pointer product-row" data-id="<?= $p['id'] ?>">
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['id']) ?></td>
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['name'] ?? '') ?></td>
+                    <tr class="hover:bg-orange-100" data-id="<?= $p['id'] ?>">
+                        <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600
+                         transition-colors duration-150" data-id="<?= $p['id'] ?>"><?= htmlspecialchars($p['id']) ?>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600
+                         transition-colors duration-150" data-id="<?= $p['id'] ?>">
+                            <?= htmlspecialchars($p['name'] ?? '') ?>
+                        </td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['sku_code'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['price'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2">
@@ -64,99 +70,106 @@
     </div>
 
     <script>
-        let selectedProductId = null;
-        const deleteModal = document.getElementById('deleteModal');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        $(document).ready(function () {
 
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                selectedProductId = this.dataset.id;
-                deleteModal.classList.remove('hidden');
-                deleteModal.classList.add('flex');
+            let selectedProductId = null;
+
+            // DELETE BUTTON CLICK
+            $('.delete-btn').on('click', function () {
+                selectedProductId = $(this).data('id');
+                $('#deleteModal').removeClass('hidden').addClass('flex');
             });
-        });
 
-        cancelBtn.addEventListener('click', function () {
-            deleteModal.classList.add('hidden');
-            deleteModal.classList.remove('flex');
-        });
+            // CANCEL DELETE
+            $('#cancelBtn').on('click', function () {
+                $('#deleteModal').addClass('hidden').removeClass('flex');
+            });
 
-        confirmDeleteBtn.addEventListener('click', function () {
-            fetch(`/products/${selectedProductId}/delete`, { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        deleteModal.classList.add('hidden');
-                        deleteModal.classList.remove('flex');
+            // CONFIRM DELETE
+            $('#confirmDeleteBtn').on('click', function () {
 
-                        const row = document.querySelector(`button[data-id="${selectedProductId}"]`).closest('tr');
-                        if (row) {
-                            row.style.opacity = '0';
-                            row.style.transition = 'opacity 0.3s ease';
-                            setTimeout(() => row.remove(), 300);
-                        }
+                $.ajax({
+                    url: `/products/${selectedProductId}/delete`,
+                    method: 'POST',
+                    dataType: 'json',
 
-                        const successMsg = document.createElement('div');
-                        successMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base';
-                        successMsg.style.zIndex = '9999';
-                        successMsg.textContent = '✓ Product deleted successfully!';
-                        document.body.appendChild(successMsg);
-
-                        setTimeout(() => {
-                            successMsg.style.opacity = '0';
-                            successMsg.style.transition = 'opacity 0.3s ease';
-                            setTimeout(() => successMsg.remove(), 300);
-                        }, 3000);
-                    } else {
-                        alert(data.message || 'Delete failed');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Server error');
-                });
-        });
-
-        // Open product modal on click
-        document.querySelectorAll('.product-row').forEach(row => {
-            row.addEventListener('click', function () {
-
-                const productId = this.dataset.id;
-
-                fetch(`/products/${productId}`)
-                    .then(res => res.json())
-                    .then(data => {
+                    success: function (data) {
 
                         if (data.success) {
 
-                            const product = data.product;
+                            $('#deleteModal').addClass('hidden').removeClass('flex');
 
-                            document.getElementById('modalContent').innerHTML = `
-                        <p><strong>Name:</strong> ${product.name}</p>
-                        <p><strong>SKU:</strong> ${product.sku_code}</p>
-                        <p><strong>Price:</strong> ${product.price}</p>
-                        <p><strong>Description:</strong> ${product.description ?? ''}</p>
-                    `;
+                            let row = $(`button[data-id="${selectedProductId}"]`).closest('tr');
 
-                            document.getElementById('productModal').classList.remove('hidden');
-                            document.getElementById('productModal').classList.add('flex');
+                            row.fadeOut(300, function () {
+                                $(this).remove();
+                            });
 
+                            // Success message
+                            let successMsg = $(`
+                        <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base">
+                             Product deleted successfully!
+                        </div>
+                    `);
+
+                            $('body').append(successMsg);
+
+                            setTimeout(() => {
+                                successMsg.fadeOut(300, function () {
+                                    $(this).remove();
+                                });
+                            }, 3000);
+
+                        } else {
+                            alert(data.message || 'Delete failed');
                         }
-                    });
+                    }
+                });
             });
-        });
 
-        document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('productModal').classList.add('hidden');
-        });
+            // PRODUCT CLICK → SHOW MODAL
+            $('.product-row').on('click', function (e) {
 
-        // also close when clicking outside the content box
-        document.getElementById('productModal').addEventListener('click', (e) => {
-            if (e.target.id === 'productModal') {
-                e.currentTarget.classList.add('hidden');
-                e.currentTarget.classList.remove('flex');
-            }
+                if ($(e.target).closest('button, a').length) return;
+
+                let productId = $(this).data('id');
+
+                $.ajax({
+                    url: `/products/${productId}`,
+                    method: 'GET',
+                    dataType: 'json',
+
+                    success: function (data) {
+
+                        if (data.success) {
+
+                            let p = data.product;
+
+                            $('#modalContent').html(`
+                        <p><strong>Name:</strong> ${p.name}</p>
+                        <p><strong>SKU:</strong> ${p.sku_code}</p>
+                        <p><strong>Price:</strong> ${p.price}</p>
+                        <p><strong>Description:</strong> ${p.description ?? ''}</p>
+                    `);
+
+                            $('#productModal').removeClass('hidden').addClass('flex');
+                        }
+                    }
+                });
+            });
+
+            // CLOSE PRODUCT MODAL
+            $('#closeModal').on('click', function () {
+                $('#productModal').addClass('hidden').removeClass('flex');
+            });
+
+            // CLICK OUTSIDE CLOSE
+            $('#productModal').on('click', function (e) {
+                if (e.target === this) {
+                    $(this).addClass('hidden').removeClass('flex');
+                }
+            });
+
         });
     </script>
 </div>
