@@ -52,6 +52,13 @@
                 </select>
 
                 <div class="form-group mt-1">
+                    <label for="quantity">Quantity :</label>
+                    <input type="number" id="quantity" name="quantity" min="0" value="<?= $old['quantity'] ?? '0' ?>"
+                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        placeholder="Enter initial quantity" required>
+                </div>
+
+                <div class="form-group mt-1">
                     <label for="images">Product Images :</label>
                     <input type="file" id="images" name="images[]" multiple
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg" placeholder="Upload product images">

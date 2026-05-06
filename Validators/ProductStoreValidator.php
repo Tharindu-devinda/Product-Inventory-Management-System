@@ -59,6 +59,13 @@ class ProductStoreValidator
             $errors['supplier_id'] = 'Invalid supplier selected';
         }
 
+        // Quantity validation
+        if (!isset($this->product['quantity']) || $this->product['quantity'] === '') {
+            $errors['quantity'] = 'Quantity is required';
+        } elseif (!is_numeric($this->product['quantity']) || (int) $this->product['quantity'] < 0) {
+            $errors['quantity'] = 'Quantity must be a valid non-negative number';
+        }
+
         return $errors;
     }
 }

@@ -17,6 +17,8 @@
                     <th class="border border-gray-300 px-4 py-2">Name</th>
                     <th class="border border-gray-300 px-4 py-2">SKU</th>
                     <th class="border border-gray-300 px-4 py-2">Price</th>
+                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                    <th class="border border-gray-300 px-4 py-2">Status</th>
                     <th class="border border-gray-300 px-4 py-2">Actions</th>
                 </tr>
             </thead>
@@ -32,6 +34,8 @@
                         </td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['sku_code'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['price'] ?? '') ?></td>
+                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['quantity'] ?? '') ?></td>
+                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['status'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2">
                             <a href="/products/<?= $p['id'] ?>/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
                             <button data-id="<?= $p['id'] ?>"

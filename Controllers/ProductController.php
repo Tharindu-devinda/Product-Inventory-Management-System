@@ -26,7 +26,7 @@ class ProductController extends Controller
     public function store(Request $request): string
     {
         try {
-            $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id']);
+            $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id', 'quantity']);
 
             $productModel = new Product();
 
@@ -50,6 +50,14 @@ class ProductController extends Controller
 
             if (!$productId) {
                 return $this->jsonResponse(false, 'Failed to create product');
+            }
+
+            // Create inventory record
+            $inventoryCreated = $productModel->createInventory($productId, (int) $inputs['quantity']);
+
+            if (!$inventoryCreated) {
+                $productModel->softDelete($productId);
+                return $this->jsonResponse(false, 'Failed to create inventory record.');
             }
 
             // handle uploaded images
@@ -123,8 +131,9 @@ class ProductController extends Controller
         }
 
         $suppliers = $productModel->getAllSuppliers();
+        $inventory = $productModel->getInventory($id) ?? ['quantity' => 0];
 
-        return $this->view('edit-product', ['product' => $product, 'suppliers' => $suppliers, 'errors' => [], 'old' => []]);
+        return $this->view('edit-product', ['product' => $product, 'suppliers' => $suppliers, 'inventory' => $inventory, 'errors' => [], 'old' => []]);
     }
 
     /**
@@ -135,7 +144,7 @@ class ProductController extends Controller
     {
         try {
             $id = $request->attributes->get('id');
-            $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id']);
+            $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id', 'quantity']);
 
             $productModel = new Product();
             $product = $productModel->getProductById($id);
@@ -161,6 +170,8 @@ class ProductController extends Controller
             );
 
             if ($updated) {
+                $productModel->updateInventory($id, (int) $inputs['quantity']);
+
                 return $this->jsonResponse(true, 'Product updated successfully');
             }
 

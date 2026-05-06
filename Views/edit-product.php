@@ -45,6 +45,15 @@
             </div>
 
             <div class="form-group mt-1">
+                <label for="quantity">Quantity :</label>
+                <input type="number" id="quantity" name="quantity" min="0"
+                    value="<?= htmlspecialchars($inventory['quantity'] ?? 0) ?>"
+                    class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="Enter quantity" required>
+                <small class="text-red-500"></small>
+            </div>
+
+            <div class="form-group mt-1">
                 <label for="description">Description :</label>
                 <textarea id="description" name="description"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"

@@ -48,9 +48,13 @@ class Product
      */
     public function getAllProducts(): array
     {
-        $sql = "SELECT id, name, sku_code, price, description, supplier_id FROM product WHERE deleted_at IS NULL";
+        $sql = "SELECT p.id, p.name, p.sku_code, p.price, p.description, p.supplier_id, 
+                COALESCE(i.quantity, 0) as quantity, COALESCE(i.status, 'active') as status
+                FROM product p
+                LEFT JOIN inventory i ON p.id = i.product_id
+                WHERE p.deleted_at IS NULL";
         $stmt = $this->conn->query($sql);
-        
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
@@ -144,5 +148,54 @@ class Product
         $files = array_diff(scandir($uploadDir), ['.', '..']);
 
         return array_values($files);
+    }
+
+    /**
+     * Create inventory record for a product
+     * @return bool Returns true on success, false on failure
+     */
+    public function createInventory(int $productId, int $quantity): bool
+    {
+        $sql = "INSERT INTO inventory (product_id, quantity, warehouse_id, status) 
+                VALUES (:product_id, :quantity, 1, 'active')";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            ':product_id' => $productId,
+            ':quantity' => $quantity
+        ]);
+    }
+
+    /**
+     * Get inventory for a product
+     * @return array|null Returns inventory data or null if not found
+     */
+    public function getInventory(int $productId): ?array
+    {
+        $sql = "SELECT id, product_id, quantity, warehouse_id, status FROM inventory 
+                WHERE product_id = :product_id LIMIT 1";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':product_id' => $productId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
+
+    /**
+     * Update inventory quantity for a product
+     * @return bool Returns true on success, false on failure
+     */
+    public function updateInventory(int $productId, int $quantity): bool
+    {
+        $sql = "UPDATE inventory SET quantity = :quantity WHERE product_id = :product_id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            ':quantity' => $quantity,
+            ':product_id' => $productId
+        ]);
     }
 }
