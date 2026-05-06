@@ -53,7 +53,7 @@ class ProductController extends Controller
             }
 
             // handle uploaded images
-            $uploadDir = dirname(__DIR__) . '/public/images/product-images/' . $productId;
+            $uploadDir = dirname(__DIR__) . '/images/product-images/' . $productId;
 
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0777, true);
@@ -206,7 +206,7 @@ class ProductController extends Controller
         }
 
         $imageFiles = $productModel->getProductImages($id);
-        $images = array_map(fn($file) => '/public/images/product-images/' . $id . '/' . $file, $imageFiles);
+        $images = array_map(fn($file) => '/images/product-images/' . $id . '/' . $file, $imageFiles);
         $product['images'] = $images;
 
         return $this->jsonResponse(true, '', ['product' => $product]);

@@ -135,7 +135,7 @@ class Product
      */
     public function getProductImages(int $productId): array
     {
-        $uploadDir = dirname(__DIR__) . '/public/images/product-images/' . $productId;
+        $uploadDir = dirname(__DIR__) . '/images/product-images/' . $productId;
 
         if (!is_dir($uploadDir)) {
             return [];
