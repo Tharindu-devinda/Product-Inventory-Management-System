@@ -109,19 +109,29 @@ class ProductController extends Controller
 
     /**
      * Display a list of all products
-     * return HTML view with products data
+     * return HTML view with products data or JSON if AJAX request
      */
-    public function list(): string
+    public function list(Request $request): string
     {
         $productModel = new Product();
         $products = $productModel->getAllProducts();
+
+        // Check if it's an AJAX request by checking the header
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        // Return JSON if AJAX request
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            return json_encode($products);
+        }
 
         return $this->view('products', ['products' => $products]);
     }
 
     public function edit(Request $request): string
     {
-        $id = $request->attributes->get('id');
+        $id = (int) $request->attributes->get('id');
         $productModel = new Product();
         $product = $productModel->getProductById($id);
 
@@ -143,7 +153,7 @@ class ProductController extends Controller
     public function update(Request $request): string
     {
         try {
-            $id = $request->attributes->get('id');
+            $id = (int) $request->attributes->get('id');
             $inputs = $this->normalizeInputs($request, ['name', 'sku_code', 'price', 'description', 'supplier_id', 'quantity']);
 
             $productModel = new Product();
@@ -188,7 +198,7 @@ class ProductController extends Controller
     public function delete(Request $request): string
     {
         try {
-            $id = $request->attributes->get('id');
+            $id = (int) $request->attributes->get('id');
             $productModel = new Product();
             $deleted = $productModel->softDelete($id);
 
@@ -208,7 +218,7 @@ class ProductController extends Controller
      */
     public function show(Request $request): string
     {
-        $id = $request->attributes->get('id');
+        $id = (int) $request->attributes->get('id');
         $productModel = new Product();
         $product = $productModel->getProductById($id);
 

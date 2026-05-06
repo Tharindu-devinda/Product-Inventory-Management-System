@@ -7,53 +7,30 @@
         </a>
     </div>
 
-    <?php if (empty($products)): ?>
-        <p>No products found.</p>
-    <?php else: ?>
-        <table class="w-full border-collapse border border-gray-300">
-            <thead class="bg-amber-500 text-white">
-                <tr>
-                    <th class="border border-gray-300 px-4 py-2">ID</th>
-                    <th class="border border-gray-300 px-4 py-2">Name</th>
-                    <th class="border border-gray-300 px-4 py-2">SKU</th>
-                    <th class="border border-gray-300 px-4 py-2">Price</th>
-                    <th class="border border-gray-300 px-4 py-2">Quantity</th>
-                    <th class="border border-gray-300 px-4 py-2">Status</th>
-                    <th class="border border-gray-300 px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($products as $p): ?>
-                    <tr class="hover:bg-orange-100" data-id="<?= $p['id'] ?>">
-                        <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600
-                         transition-colors duration-150" data-id="<?= $p['id'] ?>"><?= htmlspecialchars($p['id']) ?>
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600
-                         transition-colors duration-150" data-id="<?= $p['id'] ?>">
-                            <?= htmlspecialchars($p['name'] ?? '') ?>
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['sku_code'] ?? '') ?></td>
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['price'] ?? '') ?></td>
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['quantity'] ?? '') ?></td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <?php 
-                                $status = htmlspecialchars($p['status'] ?? '');
-                                $statusClass = $status === 'in stock' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                            ?>
-                            <span class="<?= $statusClass ?> px-3 py-1 rounded-full font-semibold text-sm">
-                                <?= $status ?>
-                            </span>
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <a href="/products/<?= $p['id'] ?>/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
-                            <button data-id="<?= $p['id'] ?>"
-                                class="delete-btn bg-red-500 text-white px-3 py-1 rounded">Delete</button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+    <div id="loadingSpinner" class="text-center py-4">
+        <p class="text-gray-600">Loading products...</p>
+    </div>
+
+    <table id="productsTable" class="w-full border-collapse border border-gray-300 hidden">
+        <thead class="bg-amber-500 text-white">
+            <tr>
+                <th class="border border-gray-300 px-4 py-2">ID</th>
+                <th class="border border-gray-300 px-4 py-2">Name</th>
+                <th class="border border-gray-300 px-4 py-2">SKU</th>
+                <th class="border border-gray-300 px-4 py-2">Price</th>
+                <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                <th class="border border-gray-300 px-4 py-2">Status</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="productsTableBody">
+            <!-- Products will be loaded here -->
+        </tbody>
+    </table>
+
+    <div id="noProductsMsg" class="text-center py-6 hidden">
+        <p class="text-gray-600 text-lg">No products found.</p>
+    </div>
 
     <!-- DELETE MODAL -->
     <div id="deleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/25">
@@ -85,83 +62,108 @@
         $(document).ready(function () {
 
             let selectedProductId = null;
+            let isDeleting = false;
 
-            // DELETE BUTTON CLICK
-            $('.delete-btn').on('click', function () {
-                selectedProductId = $(this).data('id');
-                $('#deleteModal').removeClass('hidden').addClass('flex');
-            });
+            // LOAD PRODUCTS ON PAGE LOAD
+            loadProducts();
 
-            // CANCEL DELETE
-            $('#cancelBtn').on('click', function () {
-                $('#deleteModal').addClass('hidden').removeClass('flex');
-            });
-
-            // CONFIRM DELETE
-            $('#confirmDeleteBtn').on('click', function () {
+            function loadProducts() {
                 $.ajax({
-                    url: `/products/${selectedProductId}/delete`,
-                    method: 'POST',
-                    dataType: 'json',
-
-                    success: function (data) {
-
-                        if (data.success) {
-
-                            $('#deleteModal').addClass('hidden').removeClass('flex');
-
-                            let row = $(`button[data-id="${selectedProductId}"]`).closest('tr');
-
-                            row.fadeOut(300, function () {
-                                $(this).remove();
-                            });
-
-                            // Success message
-                            let successMsg = $(`
-                        <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base">
-                             Product deleted successfully!
-                        </div>
-                    `);
-
-                            $('body').append(successMsg);
-
-                            setTimeout(() => {
-                                successMsg.fadeOut(300, function () {
-                                    $(this).remove();
-                                });
-                            }, 3000);
-
-                        } else {
-                            alert(data.message || 'Delete failed');
-                        }
-                    }
-                });
-            });
-
-            // PRODUCT CLICK → SHOW MODAL
-            $('.product-row').on('click', function (e) {
-
-                if ($(e.target).closest('button, a').length) return;
-
-                let productId = $(this).data('id');
-
-                $.ajax({
-                    url: `/products/${productId}`,
+                    url: '/products',
                     method: 'GET',
                     dataType: 'json',
 
                     success: function (data) {
+                        $('#loadingSpinner').hide();
 
-                        if (data.success) {
+                        if (!data || (Array.isArray(data) && data.length === 0)) {
+                            $('#noProductsMsg').removeClass('hidden');
+                            return;
+                        }
 
-                            let p = data.product;
+                        // Handle if data is an object with a products property
+                        let products = Array.isArray(data) ? data : (data.products || []);
 
-                            $('#modalContent').html(`
-                                <p><strong>Name:</strong> ${p.name}</p>
-                                <p><strong>SKU:</strong> ${p.sku_code}</p>
-                                <p><strong>Price:</strong> ${p.price}</p>
-                                <p><strong>Description:</strong> ${p.description ?? ''}</p>
-                                ${p.images && p.images.length ? `
+                        if (products.length === 0) {
+                            $('#noProductsMsg').removeClass('hidden');
+                            return;
+                        }
+
+                        let tbody = $('#productsTableBody');
+                        tbody.empty();
+
+                        $.each(products, function (index, p) {
+                            let statusClass = p.status === 'in stock' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+
+                            let row = `
+                                <tr class="hover:bg-orange-100" data-id="${p.id}">
+                                    <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600 transition-colors duration-150" data-id="${p.id}">
+                                        ${p.id}
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2 product-row cursor-pointer hover:bg-orange-200 hover:text-amber-600 transition-colors duration-150" data-id="${p.id}">
+                                        ${p.name}
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2">${p.sku_code}</td>
+                                    <td class="border border-gray-300 px-4 py-2">${p.price}</td>
+                                    <td class="border border-gray-300 px-4 py-2">${p.quantity}</td>
+                                    <td class="border border-gray-300 px-4 py-2">
+                                        <span class="${statusClass} px-3 py-1 rounded-full font-semibold text-sm">
+                                            ${p.status}
+                                        </span>
+                                    </td>
+                                    <td class="border border-gray-300 px-4 py-2">
+                                        <a href="/products/${p.id}/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
+                                        <button data-id="${p.id}" class="delete-btn bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+
+                            tbody.append(row);
+                        });
+
+                        $('#productsTable').removeClass('hidden');
+
+                        // Re-bind event handlers for dynamically loaded rows
+                        bindEventHandlers();
+                    },
+
+                    error: function (xhr, status, error) {
+                        $('#loadingSpinner').html(`
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                <p class="font-bold">Failed to load products</p>
+                                <p class="text-sm">Status: ${xhr.status} ${xhr.statusText}</p>
+                                <p class="text-sm">Error: ${error}</p>
+                                <p class="text-sm mt-2">Response: ${xhr.responseText.substring(0, 200)}</p>
+                            </div>
+                        `);
+                    }
+                });
+            }
+
+            function bindEventHandlers() {
+                // DELETE BUTTON CLICK
+                $('.delete-btn').off('click').on('click', function (e) {
+                    e.stopPropagation();
+                    selectedProductId = $(this).data('id');
+                    $('#deleteModal').removeClass('hidden').addClass('flex');
+                });
+
+                // PRODUCT ROW CLICK → SHOW MODAL
+                $('.product-row').off('click').on('click', function (e) {
+                    if ($(e.target).closest('button, a').length) return;
+
+                    let productId = $(this).data('id');
+
+                    $.ajax({
+                        url: `/products/${productId}`,
+                        method: 'GET',
+                        dataType: 'json',
+
+                        success: function (data) {
+                            if (data.success) {
+                                let p = data.product;
+
+                                let imagesHtml = p.images && p.images.length ? `
                                     <div class="mt-4">
                                         <p><strong>Images:</strong></p>
                                         <div class="grid grid-cols-3 gap-3">
@@ -173,11 +175,80 @@
                                         </div>
                                         ${p.images.length > 5 ? `<p class="text-sm text-gray-500 mt-2">+${p.images.length - 5} more images</p>` : ''}
                                     </div>
-                                ` : '<p class="text-gray-500 mt-4">No images</p>'}
+                                ` : '<p class="text-gray-500 mt-4">No images</p>';
+
+                                $('#modalContent').html(`
+                                    <p><strong>Name:</strong> ${p.name}</p>
+                                    <p><strong>SKU:</strong> ${p.sku_code}</p>
+                                    <p><strong>Price:</strong> ${p.price}</p>
+                                    <p><strong>Description:</strong> ${p.description ?? ''}</p>
+                                    ${imagesHtml}
+                                `);
+
+                                $('#productModal').removeClass('hidden').addClass('flex');
+                            } else {
+                                alert(data.message || 'Failed to load product details');
+                            }
+                        },
+
+                        error: function () {
+                            alert('Error: Failed to load product details');
+                        }
+                    });
+                });
+            }
+
+            // CANCEL DELETE
+            $('#cancelBtn').on('click', function () {
+                $('#deleteModal').addClass('hidden').removeClass('flex');
+            });
+
+            // CONFIRM DELETE
+            $('#confirmDeleteBtn').on('click', function () {
+                if (isDeleting) return;
+                isDeleting = true;
+
+                $.ajax({
+                    url: `/products/${selectedProductId}/delete`,
+                    method: 'POST',
+                    dataType: 'json',
+
+                    success: function (data) {
+                        if (data.success) {
+                            $('#deleteModal').addClass('hidden').removeClass('flex');
+                            $('#productModal').addClass('hidden').removeClass('flex');
+
+                            let row = $(`button[data-id="${selectedProductId}"]`).closest('tr');
+
+                            row.fadeOut(300, function () {
+                                $(this).remove();
+                            });
+
+                            // Success message
+                            let successMsg = $(`
+                                <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base">
+                                    Product deleted successfully!
+                                </div>
                             `);
 
-                            $('#productModal').removeClass('hidden').addClass('flex');
+                            $('body').append(successMsg);
+
+                            setTimeout(() => {
+                                successMsg.fadeOut(300, function () {
+                                    $(this).remove();
+                                });
+                            }, 3000);
+                        } else {
+                            alert(data.message || 'Delete failed');
                         }
+                    },
+
+                    error: function (xhr, status, error) {
+                        alert('Error: Failed to delete product. Please try again.');
+                    },
+
+                    complete: function () {
+                        isDeleting = false;
                     }
                 });
             });
