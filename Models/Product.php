@@ -156,14 +156,17 @@ class Product
      */
     public function createInventory(int $productId, int $quantity): bool
     {
+        $status = $quantity > 0 ? 'in stock' : 'out of stock';
+
         $sql = "INSERT INTO inventory (product_id, quantity, warehouse_id, status) 
-                VALUES (:product_id, :quantity, 1, 'active')";
+                VALUES (:product_id, :quantity, 1, :status)";
 
         $stmt = $this->conn->prepare($sql);
 
         return $stmt->execute([
             ':product_id' => $productId,
-            ':quantity' => $quantity
+            ':quantity' => $quantity,
+            ':status' => $status
         ]);
     }
 
@@ -189,13 +192,29 @@ class Product
      */
     public function updateInventory(int $productId, int $quantity): bool
     {
-        $sql = "UPDATE inventory SET quantity = :quantity WHERE product_id = :product_id";
+        $status = $quantity > 0 ? 'in stock' : 'out of stock';
 
-        $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
+        // First try to update
+        $updateSql = "UPDATE inventory SET quantity = :quantity, status = :status WHERE product_id = :product_id";
+        $stmt = $this->conn->prepare($updateSql);
+        $stmt->execute([
             ':quantity' => $quantity,
+            ':status' => $status,
             ':product_id' => $productId
         ]);
+
+        // If no rows were updated, insert instead
+        if ($stmt->rowCount() === 0) {
+            $insertSql = "INSERT INTO inventory (product_id, quantity, warehouse_id, status) 
+                          VALUES (:product_id, :quantity, 1, :status)";
+            $stmt = $this->conn->prepare($insertSql);
+            return $stmt->execute([
+                ':product_id' => $productId,
+                ':quantity' => $quantity,
+                ':status' => $status
+            ]);
+        }
+
+        return true;
     }
 }
