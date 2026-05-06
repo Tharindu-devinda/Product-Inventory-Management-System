@@ -35,7 +35,15 @@
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['sku_code'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['price'] ?? '') ?></td>
                         <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['quantity'] ?? '') ?></td>
-                        <td class="border border-gray-300 px-4 py-2"><?= htmlspecialchars($p['status'] ?? '') ?></td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <?php 
+                                $status = htmlspecialchars($p['status'] ?? '');
+                                $statusClass = $status === 'in stock' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                            ?>
+                            <span class="<?= $statusClass ?> px-3 py-1 rounded-full font-semibold text-sm">
+                                <?= $status ?>
+                            </span>
+                        </td>
                         <td class="border border-gray-300 px-4 py-2">
                             <a href="/products/<?= $p['id'] ?>/edit" class="bg-blue-500 text-white px-3 py-1 rounded">Edit</a>
                             <button data-id="<?= $p['id'] ?>"
