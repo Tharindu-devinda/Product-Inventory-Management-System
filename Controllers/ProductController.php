@@ -160,7 +160,7 @@ class ProductController extends Controller
                 return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
             }
 
-            $updated = $productModel->updateProduct(
+            $productModel->updateProduct(
                 $id,
                 $inputs['name'],
                 $inputs['sku_code'],
@@ -169,13 +169,13 @@ class ProductController extends Controller
                 $inputs['supplier_id']
             );
 
-            if ($updated) {
-                $productModel->updateInventory($id, (int) $inputs['quantity']);
+            $inventoryUpdated = $productModel->updateInventory($id, (int) $inputs['quantity']);
 
+            if ($inventoryUpdated) {
                 return $this->jsonResponse(true, 'Product updated successfully');
             }
 
-            return $this->jsonResponse(false, 'Failed to update product');
+            return $this->jsonResponse(false, 'Failed to update inventory record');
         } catch (\Exception $e) {
             return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
