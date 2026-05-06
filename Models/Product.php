@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Models;
 
@@ -6,7 +7,7 @@ use Config\DbConnector;
 
 class Product
 {
-    private $conn;
+    private \PDO $conn;
 
     public function __construct()
     {
@@ -14,7 +15,10 @@ class Product
         $this->conn = $db->connect();
     }
 
-    // Create a new product
+    /**
+     * Create a new product
+     * @return int|false Returns the new product ID on success, or false on failure
+     */
     public function createProduct(string $name, string $skuCode, float $price, string $description, int $supplierId, int $userId): int|false
     {
         $sql = "INSERT INTO product (name, sku_code, price, description, supplier_id, user_id)
@@ -38,24 +42,36 @@ class Product
         return false;
     }
 
-    // Get all products (excluding soft deleted)
-    public function getAllProducts()
+    /**
+     * Get all products (excluding deleted ones)
+     * @return array Returns an array of products
+     */
+    public function getAllProducts(): array
     {
         $sql = "SELECT id, name, sku_code, price, description, supplier_id FROM product WHERE deleted_at IS NULL";
         $stmt = $this->conn->query($sql);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
-    // Get single product by ID
-    public function getProductById($id)
+    /**
+     * Get single product by ID
+     * @return array|null Returns the product data or null if not found
+     */
+    public function getProductById(int $id): ?array
     {
         $stmt = $this->conn->prepare("SELECT * FROM product WHERE id = :id AND deleted_at IS NULL");
         $stmt->execute([':id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
     }
 
-    // Check if SKU code already exists
-    public function skuExists($skuCode)
+    /**
+     * Check if SKU code already exists
+     * @return bool Returns true if the SKU code exists, false otherwise
+     */
+    public function skuExists(string $skuCode): bool
     {
         $sql = "SELECT id FROM product WHERE sku_code = :sku_code AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
@@ -64,16 +80,23 @@ class Product
         return $stmt->fetch(\PDO::FETCH_ASSOC) !== false;
     }
 
-    // Get all suppliers
-    public function getAllSuppliers()
+    /**
+     * Get all suppliers 
+     * @return array Returns an array of suppliers
+     */
+    public function getAllSuppliers(): array
     {
         $sql = "SELECT id, name FROM supplier WHERE deleted_at IS NULL ORDER BY name";
         $stmt = $this->conn->query($sql);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
-    // Update product
-    public function updateProduct($id, $name, $skuCode, $price, $description, $supplierId)
+    /**
+     * Update a product
+     * @return bool Returns true on success, false on failure
+     */
+    public function updateProduct(int $id, string $name, string $skuCode, float $price, string $description, int $supplierId): bool
     {
         $sql = "UPDATE product 
                 SET name = :name, sku_code = :sku_code, price = :price, description = :description, supplier_id = :supplier_id 
@@ -93,16 +116,23 @@ class Product
         return $stmt->rowCount() > 0;
     }
 
-    // Soft delete product
-    public function softDelete($id)
+    /**
+     * Soft delete product by ID
+     * @return bool Returns true on success, false on failure
+     */
+    public function softDelete(int $id): bool
     {
         $sql = "UPDATE product SET deleted_at = NOW() WHERE id = :id AND deleted_at IS NULL";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':id' => $id]);
+
         return $stmt->rowCount() > 0;
     }
 
-    // Get product images
+    /**
+     * Get product images by product ID
+     * @return array Returns an array of image filenames
+     */
     public function getProductImages(int $productId): array
     {
         $uploadDir = dirname(__DIR__) . '/public/images/product-images/' . $productId;
@@ -112,6 +142,7 @@ class Product
         }
 
         $files = array_diff(scandir($uploadDir), ['.', '..']);
+
         return array_values($files);
     }
 }

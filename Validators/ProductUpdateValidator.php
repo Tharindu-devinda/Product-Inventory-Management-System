@@ -1,53 +1,56 @@
 <?php
+declare(strict_types=1);
 
 namespace Validators;
 
+use Models\Product;
+
 class ProductUpdateValidator
 {
-    private $product;
-    private $productModel;
-    private $currentProduct;
+    private array $product;
+    private ?Product $productModel;
+    private ?array $currentProduct;
 
-    public function __construct($product, $productModel = null, $currentProduct = null)
+    public function __construct(array $product, ?Product $productModel = null, ?array $currentProduct = null)
     {
         $this->product = $product;
         $this->productModel = $productModel;
         $this->currentProduct = $currentProduct;
     }
 
-    public function validate()
+    public function validate(): array
     {
         $errors = [];
 
         // Name
         if (empty($this->product['name'])) {
             $errors['name'] = 'Product name is required';
-        } elseif (\strlen($this->product['name']) < 3) {
+        } elseif (mb_strlen((string) ($this->product['name'] ?? '')) < 3) {
             $errors['name'] = 'Product name must be at least 3 characters';
         }
 
         // SKU
         if (empty($this->product['sku_code'])) {
             $errors['sku_code'] = 'SKU code is required';
-        } elseif (\strlen($this->product['sku_code']) < 3) {
+        } elseif (mb_strlen((string) ($this->product['sku_code'] ?? '')) < 3) {
             $errors['sku_code'] = 'SKU code must be at least 3 characters';
         } else {
             // Only check uniqueness when SKU was changed (or when no current product provided)
-            $skuChanged = !$this->currentProduct || ($this->product['sku_code'] !== ($this->currentProduct['sku_code'] ?? ''));
-            if ($skuChanged && $this->productModel && $this->productModel->skuExists($this->product['sku_code'])) {
+            $skuChanged = !$this->currentProduct || ((string) ($this->product['sku_code'] ?? '') !== (string) ($this->currentProduct['sku_code'] ?? ''));
+            if ($skuChanged && $this->productModel && $this->productModel->skuExists((string) $this->product['sku_code'])) {
                 $errors['sku_code'] = 'SKU code already exists';
             }
         }
 
         // Price
-        if (empty($this->product['price'])) {
+        if (!isset($this->product['price']) || $this->product['price'] === '') {
             $errors['price'] = 'Price is required';
-        } elseif (!is_numeric($this->product['price']) || $this->product['price'] <= 0) {
+        } elseif (!is_numeric($this->product['price']) || (float) $this->product['price'] <= 0) {
             $errors['price'] = 'Price must be a valid positive number';
         }
 
         // Description (optional)
-        if (!empty($this->product['description']) && \strlen($this->product['description']) > 500) {
+        if (!empty($this->product['description']) && mb_strlen((string) $this->product['description']) > 500) {
             $errors['description'] = 'Description cannot exceed 500 characters';
         }
 
