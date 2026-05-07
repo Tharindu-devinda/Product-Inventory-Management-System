@@ -135,4 +135,9 @@ class UserController extends Controller
             return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
         }
     }
+
+    public function login(): string
+    {
+        return $this->view('login', ['hideNav' => true]);
+    }
 }

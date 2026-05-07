@@ -13,6 +13,11 @@ class Controller
         include __DIR__ . '/../Views/' . $view . '.php';
         $content = ob_get_clean();
 
+        // Skip layout if hideNav flag is set (for standalone pages like login)
+        if (isset($hideNav) && $hideNav === true) {
+            return $content;
+        }
+
         // Pass content to layout
         // ob_start();
         include __DIR__ . "/../Views/layout.php";

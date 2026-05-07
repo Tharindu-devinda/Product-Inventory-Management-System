@@ -8,6 +8,7 @@ $routes = new RouteCollection();
 // Create routes using the helper function
 // User routes
 RouteHelper::addRoute($routes, 'register_view', '/users', 'UserController::index');
+RouteHelper::addRoute($routes, 'login_view', '/login', 'UserController::login');
 RouteHelper::addRoute($routes, 'users_view', '/users-list', 'UserController::list');
 // Edit form and update routes 
 RouteHelper::addRoute($routes, 'user_edit', '/users/{id}/edit', 'UserController::edit');
