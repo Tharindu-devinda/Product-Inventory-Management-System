@@ -1,22 +1,22 @@
 <?php
+declare(strict_types=1);
 
 namespace Validators;
 
 class UserUpdateValidator
 {
-    private $user;
-    private $userModel;
-    private $currentUser;
+    private array $user;
+    private mixed $userModel;
+    private mixed $currentUser;
 
-    public function __construct($user, $userModel = null, $currentUser = null)
+    public function __construct(array $user, mixed $userModel = null, mixed $currentUser = null)
     {
         $this->user = $user;
         $this->userModel = $userModel;
         $this->currentUser = $currentUser;
     }
 
-    // Validate user input for updates, check for duplicates and empty fields, return array of errors
-    public function validate()
+    public function validate(): array
     {
         $errors = [];
 
