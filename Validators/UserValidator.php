@@ -1,20 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace Validators;
 
 class UserValidator
 {
-    private $user;
-    private $userModel;
+    private array $user;
+    private mixed $userModel;
 
-    public function __construct($user, $userModel = null)
+    public function __construct(array $user, mixed $userModel = null)
     {
         $this->user = $user;
         $this->userModel = $userModel;
     }
 
-    // Validate user input,return an array of errors if any
-    public function validate()
+    public function validate(): array
     {
         $errors = [];
 
