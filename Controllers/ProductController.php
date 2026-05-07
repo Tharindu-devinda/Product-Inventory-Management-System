@@ -137,7 +137,7 @@ class ProductController extends Controller
 
         if ($product === null) {
             http_response_code(404);
-            
+
             return "Product not found";
         }
 
