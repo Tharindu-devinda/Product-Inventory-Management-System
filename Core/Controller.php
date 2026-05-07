@@ -43,6 +43,11 @@ class Controller
         return trim($input ?? '');
     }
 
+    /**
+     * Get current logged-in user ID from session
+     *
+     * @return int|null User ID or null if not logged in
+     */
     protected function getCurrentUserId(): ?int
     {
         return isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null;

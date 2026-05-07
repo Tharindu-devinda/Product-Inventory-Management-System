@@ -4,12 +4,11 @@ namespace Middleware;
 
 class AuthMiddleware
 {
-    // List of public routes that don't require login
     private static array $publicRoutes = [
         '/login',
-        '/users',  // register page
-        '/login/authenticate',  // authenticate endpoint
-        '/users/store',  // register store endpoint
+        '/users',
+        '/login/authenticate',
+        '/users/store',
     ];
 
     /**
@@ -33,17 +32,14 @@ class AuthMiddleware
      */
     public static function requireLogin(string $currentPath): void
     {
-        // Start session if not already started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // If route is public, allow access
         if (self::isPublicRoute($currentPath)) {
             return;
         }
 
-        // If route is protected and user not logged in, redirect to login
         if (!self::isAuthenticated()) {
             header('Location: /login');
             exit;
