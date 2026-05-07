@@ -194,27 +194,13 @@ class Product
     {
         $status = $quantity > 0 ? 'in stock' : 'out of stock';
 
-        // First try to update
-        $updateSql = "UPDATE inventory SET quantity = :quantity, status = :status WHERE product_id = :product_id";
-        $stmt = $this->conn->prepare($updateSql);
-        $stmt->execute([
+        $sql = "UPDATE inventory SET quantity = :quantity, status = :status WHERE product_id = :product_id";
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
             ':quantity' => $quantity,
             ':status' => $status,
             ':product_id' => $productId
         ]);
-
-        // If no rows were updated, insert instead
-        if ($stmt->rowCount() === 0) {
-            $insertSql = "INSERT INTO inventory (product_id, quantity, warehouse_id, status) 
-                          VALUES (:product_id, :quantity, 1, :status)";
-            $stmt = $this->conn->prepare($insertSql);
-            return $stmt->execute([
-                ':product_id' => $productId,
-                ':quantity' => $quantity,
-                ':status' => $status
-            ]);
-        }
-
-        return true;
     }
 }

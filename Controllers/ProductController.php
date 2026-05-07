@@ -52,11 +52,11 @@ class ProductController extends Controller
                 return $this->jsonResponse(false, 'Failed to create product');
             }
 
-            // Create inventory record
             $inventoryCreated = $productModel->createInventory($productId, (int) $inputs['quantity']);
 
             if (!$inventoryCreated) {
                 $productModel->softDelete($productId);
+
                 return $this->jsonResponse(false, 'Failed to create inventory record.');
             }
 
@@ -116,13 +116,13 @@ class ProductController extends Controller
         $productModel = new Product();
         $products = $productModel->getAllProducts();
 
-        // Check if it's an AJAX request by checking the header
+        // Check if request is AJAX 
         $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
-        // Return JSON if AJAX request
         if ($isAjax) {
             header('Content-Type: application/json');
+
             return json_encode($products);
         }
 
@@ -137,6 +137,7 @@ class ProductController extends Controller
 
         if ($product === null) {
             http_response_code(404);
+            
             return "Product not found";
         }
 
