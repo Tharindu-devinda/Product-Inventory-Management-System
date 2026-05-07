@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Product Inventory Management System</title>
     <link href="./assets/output.css" rel="stylesheet">
+    <script src="/assets/js/jquery.min.js"></script>
 </head>
 
 <body class="login flex items-center justify-center min-h-screen bg-orange-100">
@@ -21,12 +22,12 @@
                 <h1>Sign In</h1>
             </section>
 
-            <form>
+            <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">Email Address :</label> <br />
-                    <input type="text"
+                    <label for="email">Email Address:</label> <br />
+                    <input type="email"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        id="username" name="username" placeholder="Enter your email" autocomplete="username" required>
+                        id="email" name="email" placeholder="Enter your email" autocomplete="email" required>
                 </div>
 
                 <div class="form-group">
@@ -37,9 +38,37 @@
                         required>
                 </div>
 
-                <button class="btn bg-amber-500 hover:bg-amber-600 mt-3 text-white font-bold py-2 px-4 rounded"
+                <button class="btn bg-amber-500 hover:bg-amber-600 mt-3 text-white font-bold py-2 px-4 rounded w-full"
                     type="submit">Login</button>
+
+                <p class="text-red-500 mt-3" id="errorMsg"></p>
             </form>
+
+            <script>
+                $('#loginForm').on('submit', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/login/authenticate',
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {
+                            email: $('#email').val(),
+                            password: $('#password').val()
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                window.location.href = response.redirect || '/dashboard';
+                            } else {
+                                $('#errorMsg').text(response.message);
+                            }
+                        },
+                        error: function () {
+                            $('#errorMsg').text('Login failed. Please try again.');
+                        }
+                    });
+                });
+            </script>
         </main>
     </div>
 </body>

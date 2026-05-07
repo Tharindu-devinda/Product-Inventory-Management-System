@@ -26,6 +26,8 @@ RouteHelper::addRoute($routes, 'product_delete', '/products/{id}/delete', 'Produ
 RouteHelper::addRoute($routes, 'user_delete', '/users/{id}/delete', 'UserController::delete', ['POST']);
 
 RouteHelper::addRoute($routes, 'product_show', '/products/{id}', 'ProductController::show');
+RouteHelper::addRoute($routes, 'login_authenticate', '/login/authenticate', 'UserController::authenticate', ['POST']);
+RouteHelper::addRoute($routes, 'logout', '/logout', 'UserController::logout');
 
 //dashboard routes
 RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');

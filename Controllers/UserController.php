@@ -140,4 +140,52 @@ class UserController extends Controller
     {
         return $this->view('login', ['hideNav' => true]);
     }
+
+    // Handle user login, validate credentials, and start session
+    public function authenticate(Request $request): string
+    {
+        try {
+            $inputs = $this->normalizeInputs($request, ['email', 'password']);
+
+            $userModel = new User();
+            $user = $userModel->getUserByEmail($inputs['email']);
+
+            // User not found
+            if (!$user) {
+                return $this->jsonResponse(false, 'Invalid email or password');
+            }
+
+            // Verify password using password_verify()
+            if (!password_verify($inputs['password'], $user['password'])) {
+                return $this->jsonResponse(false, 'Invalid email or password');
+            }
+
+            // Login successful - start session
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['role'] = $user['role'];
+
+            return $this->jsonResponse(true, 'Login successful', ['redirect' => '/dashboard']);
+
+        } catch (Exception $e) {
+            return $this->jsonResponse(false, 'Server error: ' . $e->getMessage());
+        }
+    }
+
+    // Handle user logout - destroy session and redirect to login
+    public function logout(Request $request): string
+    {
+        // Start session if not already started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Destroy all session data
+        session_destroy();
+
+        // Redirect to login page
+        header('Location: /login');
+        exit;
+    }
 }

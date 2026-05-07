@@ -38,7 +38,7 @@ class User
     {
         $sql = "SELECT id, username, email, role FROM users WHERE deleted_at IS NULL";
         $stmt = $this->conn->query($sql);
-        
+
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -120,5 +120,25 @@ class User
         $stmt->execute([':id' => $id]);
 
         return $stmt->rowCount() > 0;
+    }
+
+    // Get user by email (with password for login verification)
+    public function getUserByEmail(string $email): array|false
+    {
+        $stmt = $this->conn->prepare("SELECT id, username, email, password, role FROM users WHERE email = :email AND deleted_at IS NULL");
+        $stmt->execute([':email' => $email]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    // get count of users by role
+    public function getCountByRole(string $role): int
+    {
+        $stmt = $this->conn->prepare("SELECT COUNT(*) AS cnt FROM users WHERE role = :role AND deleted_at IS NULL");
+        $stmt->bindValue(':role', (string) $role, \PDO::PARAM_STR);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return isset($row['cnt']) ? (int) $row['cnt'] : 0;
     }
 }
