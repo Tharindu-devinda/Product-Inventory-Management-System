@@ -30,10 +30,6 @@ class AuthMiddleware
      */
     public static function requireLogin(string $currentPath): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
         if (self::isPublicRoute($currentPath)) {
             return;
         }

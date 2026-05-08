@@ -150,22 +150,21 @@ class UserController extends Controller
             $userModel = new User();
             $user = $userModel->getUserByEmail($inputs['email']);
 
-            // User not found
             if (!$user) {
                 return $this->jsonResponse(false, 'Invalid email or password');
             }
 
-            // Verify password using password_verify()
             if (!password_verify($inputs['password'], $user['password'])) {
                 return $this->jsonResponse(false, 'Invalid email or password');
             }
 
-            // Login successful - start session
+            session_regenerate_id(true);
+
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['email'] = $user['email'];
             $_SESSION['role'] = $user['role'];
-
+        
             return $this->jsonResponse(true, 'Login successful', ['redirect' => '/dashboard']);
 
         } catch (Exception $e) {

@@ -24,8 +24,6 @@ if (strpos($requestPath, $basePath) === 0) {
 }
 $pathInfo = '/' . ltrim($pathInfo, '/');
 
-$pathInfo = '/' . ltrim($pathInfo, '/');
-
 // Start session and check authentication
 session_start();
 require_once __DIR__ . '/Middleware/AuthMiddleware.php';
