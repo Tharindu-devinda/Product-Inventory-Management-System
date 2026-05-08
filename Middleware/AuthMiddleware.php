@@ -6,9 +6,7 @@ class AuthMiddleware
 {
     private static array $publicRoutes = [
         '/login',
-        '/users',
         '/login/authenticate',
-        '/users/store',
     ];
 
     /**
