@@ -7,7 +7,8 @@
             "Models\\": "Models/",
             "Config\\": "Config/",
             "Validators\\": "Validators/",
-            "Traits\\": "Traits/"
+            "Traits\\": "Traits/",
+            "Helpers\\": "Helpers/"
         }
     },
     "authors": [
@@ -18,6 +19,7 @@
     ],
     "require": {
         "symfony/routing": "^7.4",
-        "symfony/http-foundation": "^7.4"
+        "symfony/http-foundation": "^7.4",
+        "symfony/security-csrf": "^7.4"
     }
 }

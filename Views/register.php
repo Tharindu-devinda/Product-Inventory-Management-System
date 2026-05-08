@@ -1,21 +1,9 @@
-<?php
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Product Inventory Management System</title>
-    <link href="/assets/output.css" rel="stylesheet">
-</head>
-
-<body class="login flex items-center justify-center min-h-screen bg-orange-100">
+<!-- User regsitration form with AJAX submission and validation error display -->
+<div class="login flex justify-center min-h-screen pt-5 bg-orange-100">
     <div class="container mx-3">
         <p class="bg-amber-500 max-w-sm mx-auto text-center text-lg font-bold text-white p-2 rounded-lg">Product
             Inventory Management System</p>
-        <main class="login-card max-w-sm mx-auto mt-5 py-2 px-4 bg-white rounded-lg shadow-md">
+        <main class="login-card max-w-sm mx-auto mt-2 py-2 px-4 bg-white rounded-lg shadow-md">
 
             <section class="brand text-center text-2xl font-bold">
                 <h1>Create Account</h1>
@@ -80,8 +68,13 @@
                 <button class="btn bg-amber-500 hover:bg-amber-600 mt-3 text-white font-bold py-2 px-4 rounded w-full"
                     type="submit">Register</button>
             </form>
+            <a href="/users-list"
+                class="block mt-4 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full text-center">
+                Back to Users
+            </a>
         </main>
     </div>
+    <!-- AJAX form submission and error handling -->
     <script>
         document.getElementById("registerForm").addEventListener("submit", function (e) {
             e.preventDefault();  // Prevent page reload
@@ -126,7 +119,6 @@
                     } else {
                         // Show validation errors
                         if (data.errors) {
-                            console.log('Errors:', data.errors);  // Debug log
                             Object.keys(data.errors).forEach(field => {
                                 const input = document.querySelector(`[name="${field}"]`);
                                 if (input) {
@@ -142,6 +134,4 @@
                 .catch(error => console.error('Error:', error));
         });
     </script>
-</body>
-
-</html>
+</div>

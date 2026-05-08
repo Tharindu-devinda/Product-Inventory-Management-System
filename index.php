@@ -24,6 +24,16 @@ if (strpos($requestPath, $basePath) === 0) {
 }
 $pathInfo = '/' . ltrim($pathInfo, '/');
 
+$pathInfo = '/' . ltrim($pathInfo, '/');
+
+// Start session and check authentication
+session_start();
+require_once __DIR__ . '/Middleware/AuthMiddleware.php';
+use Middleware\AuthMiddleware;
+
+// Check if user is allowed to access this route
+AuthMiddleware::requireLogin($pathInfo);
+
 // Create the routing context
 $context = new RequestContext();
 $context->fromRequest($request);
@@ -49,6 +59,13 @@ try {
             $controller = new $controllerName();
 
             if (method_exists($controller, $methodName)) {
+                // Add route parameters to request attributes
+                foreach ($params as $key => $value) {
+                    if ($key !== '_controller') {
+                        $request->attributes->set($key, $value);
+                    }
+                }
+
                 $output = $controller->$methodName($request);
 
                 if ($output !== null) {
@@ -76,4 +93,3 @@ try {
     http_response_code(404);
     echo "404 - Page not found";
 }
-?>

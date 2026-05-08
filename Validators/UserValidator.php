@@ -1,19 +1,20 @@
 <?php
+declare(strict_types=1);
 
 namespace Validators;
 
 class UserValidator
 {
-    private $user;
-    private $userModel;
+    private array $user;
+    private mixed $userModel;
 
-    public function __construct($user, $userModel = null)
+    public function __construct(array $user, mixed $userModel = null)
     {
         $this->user = $user;
         $this->userModel = $userModel;
     }
 
-    public function validate()
+    public function validate(): array
     {
         $errors = [];
 
@@ -33,6 +34,7 @@ class UserValidator
             $errors['password'] = 'Password must be at least 6 characters';
         }
 
+        // Check if password and confirm_password match, return error if they don't
         if ($this->user['password'] !== $this->user['confirm_password']) {
             $errors['confirm_password'] = 'Passwords do not match';
         }
