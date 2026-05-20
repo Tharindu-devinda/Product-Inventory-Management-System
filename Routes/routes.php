@@ -28,6 +28,15 @@ RouteHelper::addRoute($routes, 'product_show', '/products/{id}', 'ProductControl
 RouteHelper::addRoute($routes, 'login_authenticate', '/login/authenticate', 'UserController::authenticate', ['POST']);
 RouteHelper::addRoute($routes, 'logout', '/logout', 'UserController::logout');
 
+// Order routes
+RouteHelper::addRoute($routes, 'order_create_view', '/orders/create', 'OrderController::index');
+RouteHelper::addRoute($routes, 'order_store', '/orders/store', 'OrderController::store', ['POST']);
+RouteHelper::addRoute($routes, 'order_list', '/orders', 'OrderController::list');
+RouteHelper::addRoute($routes, 'order_show', '/orders/{id}', 'OrderController::show');
+RouteHelper::addRoute($routes, 'order_edit', '/orders/{id}/edit', 'OrderController::edit');
+RouteHelper::addRoute($routes, 'order_update', '/orders/{id}/update', 'OrderController::update', ['POST']);
+RouteHelper::addRoute($routes, 'order_delete', '/orders/{id}/delete', 'OrderController::delete', ['POST']);
+
 //dashboard routes
 RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');
 
