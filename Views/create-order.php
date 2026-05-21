@@ -28,7 +28,7 @@
 
                 <div class="form-group">
                     <label for="order_date">Order Date :</label>
-                    <input type="date" id="order_date" name="order_date" value="<?= date('Y-m-d') ?>"
+                    <input type="date" id="order_date" name="order_date" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                         required>
                     <small class="text-red-500"></small>
@@ -152,6 +152,24 @@
     $(document).ready(function() {
         let orderItems = [];
 
+        // TOAST NOTIFICATION HELPER
+        function showToast(message, type = 'success') {
+            let bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            let toast = $(`
+                <div class="fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base z-50">
+                    ${message}
+                </div>
+            `);
+
+            $('body').append(toast);
+
+            setTimeout(() => {
+                toast.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+
         // UPDATE PRICE WHEN PRODUCT SELECTED
         $('#product_select').change(function() {
             let price = $(this).find('option:selected').data('price') || 0;
@@ -168,18 +186,18 @@
             let price = parseFloat($('#unit_price').val()) || 0;
 
             if (!productId) {
-                alert('Please select a product');
+                showToast('Please select a product', 'error');
                 return;
             }
 
             if (quantity <= 0) {
-                alert('Quantity must be greater than 0');
+                showToast('Quantity must be greater than 0', 'error');
                 return;
             }
 
             let existingItem = orderItems.find(item => item.product_id == productId);
             if (existingItem) {
-                alert('This product is already added. Remove it first to add again.');
+                showToast('This product is already added. Remove it first to add again.', 'error');
                 return;
             }
 
@@ -259,18 +277,20 @@
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Order created successfully!');
-                        window.location.href = '/orders';
+                        showToast('Order created successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/orders';
+                        }, 1500);
                     } else {
                         let errorMsg = response.message;
                         if (response.errors) {
-                            errorMsg += '\n' + Object.values(response.errors).join('\n');
+                            errorMsg += ' ' + Object.values(response.errors).join(', ');
                         }
-                        alert(errorMsg);
+                        showToast(errorMsg, 'error');
                     }
                 },
                 error: function() {
-                    alert('Failed to create order');
+                    showToast('Failed to create order', 'error');
                 }
             });
         });
@@ -314,7 +334,7 @@
 
                         $('#customer_id').append(option);
                         closeCustomerModal();
-                        alert('Customer created successfully!');
+                        showToast('Customer created successfully!', 'success');
                     } else {
                         if (response.errors) {
                             if (response.errors.name) {
@@ -324,12 +344,12 @@
                                 $('.customer-email-error').removeClass('hidden').text(response.errors.email);
                             }
                         } else {
-                            alert(response.message);
+                            showToast(response.message, 'error');
                         }
                     }
                 },
                 error: function() {
-                    alert('Failed to create customer');
+                    showToast('Failed to create customer', 'error');
                 }
             });
         });
