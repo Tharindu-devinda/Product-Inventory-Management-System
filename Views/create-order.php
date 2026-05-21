@@ -5,19 +5,24 @@
         </section>
 
         <form id="orderForm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group md:col-span-2">
                     <label for="customer_id">Customer :</label>
-                    <select id="customer_id" name="customer_id"
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        required>
-                        <option value="">-- Select Customer --</option>
-                        <?php foreach ($customers as $customer): ?>
-                            <option value="<?= $customer['id'] ?>">
-                                <?= $customer['name'] ?> (<?= $customer['email'] ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="flex gap-2">
+                        <select id="customer_id" name="customer_id"
+                            class="flex-2 mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            required>
+                            <option value="">-- Select Customer --</option>
+                            <?php foreach ($customers as $customer): ?>
+                                <option value="<?= $customer['id'] ?>">
+                                    <?= $customer['name'] ?> (<?= $customer['email'] ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <button type="button" id="addCustomerBtn" class="mt-1 flex-2 bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded text-sm">
+                            + New
+                        </button>
+                    </div>
                     <small class="text-red-500"></small>
                 </div>
 
@@ -107,6 +112,42 @@
     </div>
 </div>
 
+<!-- CREATE CUSTOMER MODAL -->
+<div id="customerModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md relative">
+        <button type="button" id="closeCustomerModal" class="absolute top-1 right-2 text-3xl">&times;</button>
+
+        <h2 class="text-2xl font-bold mb-6">Create New Customer</h2>
+
+        <form id="customerForm">
+            <div class="form-group mb-4">
+                <label for="customer_name">Customer Name :</label>
+                <input type="text" id="customer_name" name="name" minlength="2" maxlength="100"
+                    class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="Enter customer name" required>
+                <small class="text-red-500 customer-name-error hidden"></small>
+            </div>
+
+            <div class="form-group mb-4">
+                <label for="customer_email">Email :</label>
+                <input type="email" id="customer_email" name="email" maxlength="100"
+                    class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="Enter customer email" required>
+                <small class="text-red-500 customer-email-error hidden"></small>
+            </div>
+
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded">
+                    Create Customer
+                </button>
+                <button type="button" id="cancelCustomerBtn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         let orderItems = [];
@@ -136,7 +177,6 @@
                 return;
             }
 
-            // Check if product already exists
             let existingItem = orderItems.find(item => item.product_id == productId);
             if (existingItem) {
                 alert('This product is already added. Remove it first to add again.');
@@ -152,8 +192,6 @@
             });
 
             renderItems();
-
-            // Reset form
             productSelect.val('').trigger('change');
             $('#quantity').val(1);
             $('#unit_price').val('');
@@ -169,7 +207,6 @@
         function renderItems() {
             let tbody = $('#itemsTableBody');
             tbody.empty();
-
             let total = 0;
 
             if (orderItems.length === 0) {
@@ -204,22 +241,12 @@
             $('#totalAmount').text(total.toFixed(2));
         }
 
-        // SUBMIT FORM
+        // SUBMIT ORDER FORM
         $('#orderForm').submit(function(e) {
             e.preventDefault();
 
-            if (orderItems.length === 0) {
-                alert('Please add at least one product to the order');
-                return;
-            }
-
             let customerId = $('#customer_id').val();
             let orderDate = $('#order_date').val();
-
-            if (!customerId || !orderDate) {
-                alert('Please fill in all required fields');
-                return;
-            }
 
             $.ajax({
                 url: '/orders/store',
@@ -235,13 +262,83 @@
                         alert('Order created successfully!');
                         window.location.href = '/orders';
                     } else {
-                        alert(response.message);
+                        let errorMsg = response.message;
+                        if (response.errors) {
+                            errorMsg += '\n' + Object.values(response.errors).join('\n');
+                        }
+                        alert(errorMsg);
                     }
                 },
                 error: function() {
                     alert('Failed to create order');
                 }
             });
+        });
+
+        // OPEN CREATE CUSTOMER MODAL
+        $('#addCustomerBtn').click(function() {
+            $('#customerModal').removeClass('hidden').addClass('flex');
+        });
+
+        // CLOSE CREATE CUSTOMER MODAL
+        function closeCustomerModal() {
+            $('#customerModal').addClass('hidden').removeClass('flex');
+            $('#customerForm')[0].reset();
+            $('.customer-name-error, .customer-email-error').addClass('hidden').text('');
+        }
+
+        $('#closeCustomerModal').click(closeCustomerModal);
+        $('#cancelCustomerBtn').click(closeCustomerModal);
+
+        // SUBMIT CREATE CUSTOMER FORM
+        $('#customerForm').submit(function(e) {
+            e.preventDefault();
+
+            let name = $('#customer_name').val().trim();
+            let email = $('#customer_email').val().trim();
+
+            $.ajax({
+                url: '/orders/customer/create',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    name: name,
+                    email: email
+                },
+                success: function(response) {
+                    if (response.success) {
+                        let option = $('<option></option>')
+                            .val(response.customer_id)
+                            .text(response.customer_name + ' (' + response.customer_email + ')')
+                            .prop('selected', true);
+
+                        $('#customer_id').append(option);
+                        closeCustomerModal();
+                        alert('Customer created successfully!');
+                    } else {
+                        if (response.errors) {
+                            if (response.errors.name) {
+                                $('.customer-name-error').removeClass('hidden').text(response.errors.name);
+                            }
+                            if (response.errors.email) {
+                                $('.customer-email-error').removeClass('hidden').text(response.errors.email);
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    }
+                },
+                error: function() {
+                    alert('Failed to create customer');
+                }
+            });
+        });
+
+        // CLOSE MODAL WHEN CLICKING OUTSIDE
+        $(document).click(function(e) {
+            if ($(e.target).is('#customerModal')) {
+                closeCustomerModal();
+            }
         });
     });
 </script>
