@@ -3,6 +3,9 @@
 use Core\Controller;
 use Models\Order;
 use Traits\InputNormalizer;
+use Validators\OrderStoreValidator;
+use Validators\OrderUpdateValidator;
+use Validators\CustomerValidator;
 use Symfony\Component\HttpFoundation\Request;
 
 class OrderController extends Controller
@@ -36,20 +39,15 @@ class OrderController extends Controller
             $inputs = $this->normalizeInputs($request, ['customer_id', 'order_date', 'order_items']);
 
             $orderModel = new Order();
-
-            // Validate required fields
-            $errors = [];
-            if (empty($inputs['customer_id'])) {
-                $errors['customer_id'] = 'Customer is required';
-            }
-            if (empty($inputs['order_date'])) {
-                $errors['order_date'] = 'Order date is required';
-            }
-
             $orderItems = json_decode($_POST['order_items'] ?? '[]', true);
-            if (empty($orderItems)) {
-                $errors['order_items'] = 'At least one product is required';
-            }
+
+            // Validate using OrderStoreValidator
+            $validator = new OrderStoreValidator([
+                'customer_id' => $inputs['customer_id'],
+                'order_date' => $inputs['order_date'],
+                'order_items' => $orderItems
+            ]);
+            $errors = $validator->validate();
 
             if (!empty($errors)) {
                 return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
@@ -167,14 +165,12 @@ class OrderController extends Controller
 
             $orderModel = new Order();
 
-            // Validate required fields
-            $errors = [];
-            if (empty($inputs['customer_id'])) {
-                $errors['customer_id'] = 'Customer is required';
-            }
-            if (empty($inputs['order_date'])) {
-                $errors['order_date'] = 'Order date is required';
-            }
+            // Validate using OrderUpdateValidator
+            $validator = new OrderUpdateValidator([
+                'customer_id' => $inputs['customer_id'],
+                'order_date' => $inputs['order_date']
+            ]);
+            $errors = $validator->validate();
 
             if (!empty($errors)) {
                 return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
@@ -202,6 +198,48 @@ class OrderController extends Controller
             }
 
             return $this->jsonResponse(true, 'Order updated successfully');
+        } catch (\Exception $e) {
+            return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Create a new customer
+     */
+    public function createCustomer(Request $request): string
+    {
+        try {
+            $inputs = $this->normalizeInputs($request, ['name', 'email']);
+
+            $orderModel = new Order();
+
+            // Validate using CustomerValidator
+            $validator = new CustomerValidator([
+                'name' => $inputs['name'],
+                'email' => $inputs['email']
+            ]);
+            $errors = $validator->validate();
+
+            if (!empty($errors)) {
+                return $this->jsonResponse(false, 'Validation errors', ['errors' => $errors]);
+            }
+
+            // Create customer
+            $customerId = $orderModel->createCustomer(
+                $inputs['name'],
+                $inputs['email'],
+                1  // todo: Get from authenticated user session
+            );
+
+            if (!$customerId) {
+                return $this->jsonResponse(false, 'Failed to create customer');
+            }
+
+            return $this->jsonResponse(true, 'Customer created successfully', [
+                'customer_id' => $customerId,
+                'customer_name' => $inputs['name'],
+                'customer_email' => $inputs['email']
+            ]);
         } catch (\Exception $e) {
             return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
         }

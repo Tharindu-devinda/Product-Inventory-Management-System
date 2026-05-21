@@ -35,6 +35,7 @@ RouteHelper::addRoute($routes, 'order_list', '/orders', 'OrderController::list')
 RouteHelper::addRoute($routes, 'order_show', '/orders/{id}', 'OrderController::show');
 RouteHelper::addRoute($routes, 'order_edit', '/orders/{id}/edit', 'OrderController::edit');
 RouteHelper::addRoute($routes, 'order_update', '/orders/{id}/update', 'OrderController::update', ['POST']);
+RouteHelper::addRoute($routes, 'order_create_customer', '/orders/customer/create', 'OrderController::createCustomer', ['POST']);
 
 //dashboard routes
 RouteHelper::addRoute($routes, 'dashboard', '/dashboard', 'DashboardController::index');

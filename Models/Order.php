@@ -173,4 +173,28 @@ class Order
 
         return $stmt->execute([':id' => $orderId]);
     }
+
+    /**
+     * Create a new customer
+     * @return int|false Returns the new customer ID on success, or false on failure
+     */
+    public function createCustomer(string $name, string $email, int $userId): int|false
+    {
+        $sql = "INSERT INTO customer (name, email, created_by)
+                VALUES (:name, :email, :created_by)";
+
+        $stmt = $this->conn->prepare($sql);
+
+        $success = $stmt->execute([
+            ':name' => $name,
+            ':email' => $email,
+            ':created_by' => $userId
+        ]);
+
+        if ($success) {
+            return (int) $this->conn->lastInsertId();
+        }
+
+        return false;
+    }
 }
