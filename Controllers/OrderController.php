@@ -206,25 +206,4 @@ class OrderController extends Controller
             return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Delete order (soft delete)
-     */
-    public function delete(Request $request): string
-    {
-        try {
-            $orderId = (int) $request->attributes->get('id');
-
-            $orderModel = new Order();
-            $success = $orderModel->softDelete($orderId);
-
-            if (!$success) {
-                return $this->jsonResponse(false, 'Failed to delete order');
-            }
-
-            return $this->jsonResponse(true, 'Order deleted successfully');
-        } catch (\Exception $e) {
-            return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
-        }
-    }
 }

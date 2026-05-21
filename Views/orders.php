@@ -19,19 +19,6 @@
         <p class="text-gray-600 text-lg">No orders found.</p>
     </div>
 
-    <!-- DELETE MODAL -->
-    <div id="deleteModal" class="fixed inset-0 hidden items-center justify-center bg-black/25">
-        <div class="bg-white p-5 rounded-lg shadow-md w-80">
-            <h2 class="text-lg font-bold mb-3">Confirm Delete</h2>
-            <p class="mb-4">Are you sure you want to delete this order?</p>
-
-            <div class="flex justify-end gap-2">
-                <button id="cancelBtn" class="px-3 py-1 bg-gray-300 rounded">Cancel</button>
-                <button id="confirmDeleteBtn" class="px-3 py-1 bg-red-500 text-white rounded">Delete</button>
-            </div>
-        </div>
-    </div>
-
     <!-- ORDER DETAILS MODAL -->
     <div id="orderModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center">
         <div class="bg-white p-6 rounded-lg w-full max-w-2xl relative max-h-[90vh] overflow-y-auto">
@@ -47,9 +34,6 @@
 
     <script>
         $(document).ready(function() {
-            let selectedOrderId = null;
-            let isDeleting = false;
-
             // LOAD ORDERS ON PAGE LOAD
             loadOrders();
 
@@ -104,9 +88,6 @@
                                         <a href="/orders/${order.id}/edit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded text-sm text-center">
                                             Edit
                                         </a>
-                                        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm delete-btn" data-id="${order.id}">
-                                            Delete
-                                        </button>
                                     </div>
                                 </div>
                             `;
@@ -181,42 +162,6 @@
                     },
                     error: function() {
                         alert('Failed to load order details');
-                    }
-                });
-            });
-
-            // DELETE ORDER
-            $(document).on('click', '.delete-btn', function() {
-                selectedOrderId = $(this).data('id');
-                $('#deleteModal').removeClass('hidden').addClass('flex');
-            });
-
-            $('#cancelBtn').click(function() {
-                $('#deleteModal').addClass('hidden').removeClass('flex');
-                selectedOrderId = null;
-            });
-
-            $('#confirmDeleteBtn').click(function() {
-                if (isDeleting || !selectedOrderId) return;
-
-                isDeleting = true;
-
-                $.ajax({
-                    url: `/orders/${selectedOrderId}/delete`,
-                    method: 'POST',
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.success) {
-                            $('#deleteModal').addClass('hidden').removeClass('flex');
-                            loadOrders();
-                        } else {
-                            alert(data.message || 'Failed to delete order');
-                        }
-                        isDeleting = false;
-                    },
-                    error: function() {
-                        alert('Failed to delete order');
-                        isDeleting = false;
                     }
                 });
             });
