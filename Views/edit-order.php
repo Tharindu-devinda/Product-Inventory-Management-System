@@ -4,122 +4,178 @@
             <h1 class="text-2xl font-bold">Edit Order #<?= $order['id'] ?></h1>
         </section>
 
-        <form id="orderForm">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="form-group">
-                    <label for="customer_id">Customer :</label>
-                    <select id="customer_id" name="customer_id"
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        required>
-                        <option value="">-- Select Customer --</option>
-                        <?php foreach ($customers as $customer): ?>
-                            <option value="<?= $customer['id'] ?>" <?= $order['customer_id'] == $customer['id'] ? 'selected' : '' ?>>
-                                <?= $customer['name'] ?> (<?= $customer['email'] ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <small class="text-red-500"></small>
-                </div>
-
-                <div class="form-group">
-                    <label for="order_date">Order Date :</label>
-                    <input type="date" id="order_date" name="order_date" value="<?= date('Y-m-d', strtotime($order['order_date'])) ?>"
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        required>
-                    <small class="text-red-500"></small>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Customer :</label>
+                <p class="mt-2 text-gray-900 font-medium"><?php
+                                                            $customer = array_filter($customers, fn($c) => $c['id'] == $order['customer_id']);
+                                                            $customer = reset($customer);
+                                                            echo $customer['name'] . ' (' . $customer['email'] . ')';
+                                                            ?></p>
             </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Order Date :</label>
+                <p class="mt-2 text-gray-900 font-medium"><?= date('Y-m-d', strtotime($order['order_date'])) ?></p>
+            </div>
+        </div>
 
-            <!-- CURRENT ITEMS SECTION -->
-            <div class="mt-6 border-t pt-6">
-                <h2 class="text-lg font-bold mb-4">Current Order Items</h2>
+        <!-- CURRENT ITEMS SECTION -->
+        <div class="mt-6 border-t pt-6">
+            <h2 class="text-lg font-bold mb-4">Current Order Items</h2>
 
-                <table class="w-full border-collapse border border-gray-300">
-                    <thead class="bg-amber-500 text-white">
-                        <tr>
-                            <th class="border border-gray-300 px-4 py-2">Product</th>
-                            <th class="border border-gray-300 px-4 py-2 text-right">Qty</th>
-                            <th class="border border-gray-300 px-4 py-2 text-right">Unit Price</th>
-                            <th class="border border-gray-300 px-4 py-2 text-right">Total</th>
+            <table class="w-full border-collapse border border-gray-300">
+                <thead class="bg-amber-500 text-white">
+                    <tr>
+                        <th class="border border-gray-300 px-4 py-2">Product</th>
+                        <th class="border border-gray-300 px-4 py-2 text-right">Qty</th>
+                        <th class="border border-gray-300 px-4 py-2 text-right">Unit Price</th>
+                        <th class="border border-gray-300 px-4 py-2 text-right">Total</th>
+                        <th class="border border-gray-300 px-4 py-2 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $currentTotal = 0;
+                    foreach ($orderDetails as $detail):
+                        $itemTotal = $detail['quantity'] * $detail['price'];
+                        $currentTotal += $itemTotal;
+                    ?>
+                        <tr class="hover:bg-orange-50">
+                            <td class="border border-gray-300 px-4 py-2"><?= $detail['product_name'] ?> (<?= $detail['sku_code'] ?>)</td>
+                            <td class="border border-gray-300 px-4 py-2 text-right"><?= $detail['quantity'] ?></td>
+                            <td class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($detail['price'], 2) ?></td>
+                            <td class="border border-gray-300 px-4 py-2 text-right font-bold">Rs. <?= number_format($itemTotal, 2) ?></td>
+                            <td class="border border-gray-300 px-4 py-2 text-center">
+                                <button type="button" class="delete-item-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" data-id="<?= $detail['id'] ?>">
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $currentTotal = 0;
-                        foreach ($orderDetails as $detail):
-                            $itemTotal = $detail['quantity'] * $detail['price'];
-                            $currentTotal += $itemTotal;
-                        ?>
-                            <tr>
-                                <td class="border border-gray-300 px-4 py-2"><?= $detail['product_name'] ?> (<?= $detail['sku_code'] ?>)</td>
-                                <td class="border border-gray-300 px-4 py-2 text-right"><?= $detail['quantity'] ?></td>
-                                <td class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($detail['price'], 2) ?></td>
-                                <td class="border border-gray-300 px-4 py-2 text-right font-bold">Rs. <?= number_format($itemTotal, 2) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <tr class="bg-amber-100 font-bold">
-                            <td colspan="3" class="border border-gray-300 px-4 py-2 text-right">Current Total:</td>
-                            <td class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($currentTotal, 2) ?></td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <?php endforeach; ?>
+                    <tr class="bg-amber-100 font-bold">
+                        <td colspan="4" class="border border-gray-300 px-4 py-2 text-right">Current Total:</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($currentTotal, 2) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                <div class="mt-4 p-3 bg-blue-50 border border-blue-300 rounded text-sm text-blue-800">
-                    <p><strong>Note:</strong> To modify order items, delete this order and create a new one with the updated items.</p>
-                </div>
-            </div>
+        <div class="flex gap-2 mt-6">
+            <a href="/orders"
+                class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded text-center">
+                Back to Orders
+            </a>
+        </div>
+    </div>
+</div>
 
-            <div class="flex gap-2 mt-6">
-                <button type="submit"
-                    class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded">
-                    Update Order
-                </button>
-                <a href="/orders"
-                    class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded text-center">
-                    Cancel
-                </a>
-            </div>
-        </form>
+<!-- CONFIRMATION MODAL -->
+<div id="deleteConfirmModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Confirm Delete</h2>
+        <p class="text-gray-700 mb-6">Are you sure you want to delete this item from the order?</p>
+        <div class="flex gap-2">
+            <button id="confirmDeleteBtn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                Delete
+            </button>
+            <button id="cancelDeleteBtn" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                Cancel
+            </button>
+        </div>
     </div>
 </div>
 
 <script>
     $(document).ready(function() {
         let orderId = '<?= $order["id"] ?>';
+        let itemToDelete = null;
 
-        // SUBMIT FORM
-        $('#orderForm').submit(function(e) {
-            e.preventDefault();
+        // TOAST NOTIFICATION HELPER
+        function showToast(message, type = 'success') {
+            let bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            let toast = $(`
+                <div class="fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base z-50">
+                    ${message}
+                </div>
+            `);
 
-            let customerId = $('#customer_id').val();
-            let orderDate = $('#order_date').val();
+            $('body').append(toast);
 
-            if (!customerId || !orderDate) {
-                alert('Please fill in all required fields');
-                return;
-            }
+            setTimeout(() => {
+                toast.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        }
+
+        // DELETE ITEM BUTTON CLICK
+        $(document).on('click', '.delete-item-btn', function() {
+            itemToDelete = $(this).data('id');
+            $('#deleteConfirmModal').removeClass('hidden').addClass('flex');
+        });
+
+        // CONFIRM DELETE
+        $('#confirmDeleteBtn').click(function() {
+            if (!itemToDelete) return;
 
             $.ajax({
-                url: `/orders/${orderId}/update`,
+                url: `/orders/items/${itemToDelete}/delete`,
                 method: 'POST',
                 dataType: 'json',
-                data: {
-                    customer_id: customerId,
-                    order_date: orderDate,
-                    order_items: JSON.stringify([])
-                },
                 success: function(response) {
                     if (response.success) {
-                        alert('Order updated successfully!');
-                        window.location.href = '/orders';
+                        // Find the row with this item ID and remove it
+                        let row = $(`button[data-id="${itemToDelete}"]`).closest('tr');
+                        row.fadeOut(300, function() {
+                            $(this).remove();
+
+                            // Recalculate and update total
+                            updateOrderTotal();
+
+                            showToast('Item deleted successfully!', 'success');
+                        });
                     } else {
-                        alert(response.message);
+                        showToast(response.message, 'error');
                     }
                 },
                 error: function() {
-                    alert('Failed to update order');
+                    showToast('Failed to delete item', 'error');
+                },
+                complete: function() {
+                    closeDeleteModal();
                 }
             });
+        });
+
+        // CALCULATE AND UPDATE ORDER TOTAL
+        function updateOrderTotal() {
+            let total = 0;
+            let rows = $('table tbody tr:not(:last-child)'); // Exclude footer row
+
+            rows.each(function() {
+                let totalCell = $(this).find('td').eq(3); // 4th column (Total)
+                let totalText = totalCell.text().replace('Rs. ', '').replace(/,/g, '');
+                total += parseFloat(totalText) || 0;
+            });
+
+            // Update the footer total
+            let footerTotal = $('table tfoot tr td:last');
+            footerTotal.text('Rs. ' + total.toFixed(2));
+        }
+
+        // CLOSE DELETE MODAL
+        function closeDeleteModal() {
+            $('#deleteConfirmModal').addClass('hidden').removeClass('flex');
+            itemToDelete = null;
+        }
+
+        $('#cancelDeleteBtn').click(closeDeleteModal);
+
+        // CLOSE MODAL WHEN CLICKING OUTSIDE
+        $(document).click(function(e) {
+            if ($(e.target).is('#deleteConfirmModal')) {
+                closeDeleteModal();
+            }
         });
     });
 </script>
