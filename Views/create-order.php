@@ -1,8 +1,53 @@
 <div class="py-0 mx-2">
     <div class="max-w-4xl mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
+        <!-- SELECT2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <!-- SELECT2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
         <section class="text-center mb-6">
             <h1 class="text-2xl font-bold">Create Order</h1>
         </section>
+
+        <style>
+            /* Select2 styling to match Tailwind design */
+            .select2-container--default .select2-selection--single {
+                border: 1px solid #d1d5db !important;
+                border-radius: 0.5rem !important;
+                height: 42px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            .select2-container--default.select2-container--focus .select2-selection--single {
+                border-color: #d1d5db !important;
+                box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.1), 0 0 0 3px rgba(217, 119, 6, 0.5) !important;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #111827 !important;
+                padding: 0.5rem !important;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 40px !important;
+            }
+
+            .select2-dropdown {
+                border-radius: 0.5rem !important;
+                border: 1px solid #d1d5db !important;
+            }
+
+            .select2-results__option--highlighted {
+                background-color: #f59e0b !important;
+            }
+
+            .select2-search__field {
+                border: 1px solid #d1d5db !important;
+                border-radius: 0.375rem !important;
+                padding: 0.5rem !important;
+            }
+        </style>
 
         <form id="orderForm">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -23,7 +68,6 @@
                             + New
                         </button>
                     </div>
-                    <small class="text-red-500"></small>
                 </div>
 
                 <div class="form-group">
@@ -31,7 +75,6 @@
                     <input type="date" id="order_date" name="order_date" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                         required>
-                    <small class="text-red-500"></small>
                 </div>
             </div>
 
@@ -151,6 +194,13 @@
 <script>
     $(document).ready(function() {
         let orderItems = [];
+
+        // INITIALIZE SELECT2 FOR PRODUCT SEARCH
+        $('#product_select').select2({
+            placeholder: '-- Search Product --',
+            allowClear: true,
+            width: '100%'
+        });
 
         // TOAST NOTIFICATION HELPER
         function showToast(message, type = 'success') {
