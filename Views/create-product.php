@@ -1,3 +1,14 @@
+<?php
+
+/**
+ * Create Product View
+ * 
+ * @var array $suppliers List of all suppliers
+ * @var array $errors Validation errors
+ * @var array $old Old form data
+ */
+?>
+
 <div class="py-0 mx-2">
     <div class="max-w-2xl mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
         <section class="text-center mb-6">
@@ -80,7 +91,7 @@
 </div>
 
 <script>
-    document.getElementById("productForm").addEventListener("submit", function (e) {
+    document.getElementById("productForm").addEventListener("submit", function(e) {
         e.preventDefault();
 
         // Clear previous errors
@@ -91,9 +102,9 @@
         let formData = new FormData(this);
 
         fetch("/products/store", {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

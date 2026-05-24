@@ -1,3 +1,15 @@
+<?php
+
+/**
+ * Edit Order View
+ * 
+ * @var array $order Order details
+ * @var array $customers List of all customers
+ * @var array $products List of all products
+ * @var array $orderDetails Order items with product details
+ */
+?>
+
 <div class="py-0 mx-2">
     <div class="max-w-4xl mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
         <section class="text-center mb-6">

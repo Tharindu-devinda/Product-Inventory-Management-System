@@ -1,53 +1,28 @@
+<?php
+
+/**
+ * Create Order View
+ * 
+ * @var array $customers List of all customers
+ * @var array $products List of all products
+ * @var array $errors Validation errors
+ * @var array $old Old form data
+ */
+?>
+
 <div class="py-0 mx-2">
     <div class="max-w-4xl mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
         <!-- SELECT2 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <!-- SELECT2 JS -->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <!-- MODAL & TOAST UTILITIES -->
+        <script src="/assets/js/modal.js"></script>
+        </section>
 
         <section class="text-center mb-6">
             <h1 class="text-2xl font-bold">Create Order</h1>
         </section>
-
-        <style>
-            /* Select2 styling to match Tailwind design */
-            .select2-container--default .select2-selection--single {
-                border: 1px solid #d1d5db !important;
-                border-radius: 0.5rem !important;
-                height: 42px !important;
-                display: flex !important;
-                align-items: center !important;
-            }
-
-            .select2-container--default.select2-container--focus .select2-selection--single {
-                border-color: #d1d5db !important;
-                box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.1), 0 0 0 3px rgba(217, 119, 6, 0.5) !important;
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                color: #111827 !important;
-                padding: 0.5rem !important;
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 40px !important;
-            }
-
-            .select2-dropdown {
-                border-radius: 0.5rem !important;
-                border: 1px solid #d1d5db !important;
-            }
-
-            .select2-results__option--highlighted {
-                background-color: #f59e0b !important;
-            }
-
-            .select2-search__field {
-                border: 1px solid #d1d5db !important;
-                border-radius: 0.375rem !important;
-                padding: 0.5rem !important;
-            }
-        </style>
 
         <form id="orderForm">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -195,66 +170,42 @@
     $(document).ready(function() {
         let orderItems = [];
 
-        // INITIALIZE SELECT2 FOR PRODUCT SEARCH
+        // Initialize Select2
         $('#product_select').select2({
             placeholder: '-- Search Product --',
             allowClear: true,
             width: '100%'
         });
 
-        // TOAST NOTIFICATION HELPER
-        function showToast(message, type = 'success') {
-            let bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-            let toast = $(`
-                <div class="fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg font-bold text-base z-50">
-                    ${message}
-                </div>
-            `);
-
-            $('body').append(toast);
-
-            setTimeout(() => {
-                toast.fadeOut(300, function() {
-                    $(this).remove();
-                });
-            }, 3000);
-        }
-
-        // UPDATE PRICE WHEN PRODUCT SELECTED
+        // Update price when product changes
         $('#product_select').change(function() {
-            let price = $(this).find('option:selected').data('price') || 0;
-            $('#unit_price').val(parseFloat(price).toFixed(2));
+            $('#unit_price').val(parseFloat($(this).find('option:selected').data('price') || 0).toFixed(2));
         });
 
-        // ADD ITEM TO ORDER
+        // Add item to order
         $('#addItemBtn').click(function() {
-            let productSelect = $('#product_select');
-            let productId = productSelect.val();
-            let productName = productSelect.find('option:selected').data('name');
-            let productSku = productSelect.find('option:selected').data('sku');
-            let quantity = parseInt($('#quantity').val()) || 1;
-            let price = parseFloat($('#unit_price').val()) || 0;
+            const productSelect = $('#product_select');
+            const productId = productSelect.val();
+            const quantity = parseInt($('#quantity').val()) || 1;
+            const price = parseFloat($('#unit_price').val()) || 0;
 
             if (!productId) {
                 showToast('Please select a product', 'error');
                 return;
             }
-
             if (quantity <= 0) {
                 showToast('Quantity must be greater than 0', 'error');
                 return;
             }
-
-            let existingItem = orderItems.find(item => item.product_id == productId);
-            if (existingItem) {
-                showToast('This product is already added. Remove it first to add again.', 'error');
+            if (orderItems.find(item => item.product_id == productId)) {
+                showToast('This product is already added', 'error');
                 return;
             }
 
             orderItems.push({
                 product_id: productId,
-                product_name: productName,
-                sku_code: productSku,
+                product_name: productSelect.find('option:selected').data('name'),
+                sku_code: productSelect.find('option:selected').data('sku'),
                 quantity: quantity,
                 price: price
             });
@@ -265,16 +216,15 @@
             $('#unit_price').val('');
         });
 
-        // REMOVE ITEM
+        // Remove item from order
         $(document).on('click', '.remove-item-btn', function() {
-            let productId = $(this).data('id');
-            orderItems = orderItems.filter(item => item.product_id != productId);
+            orderItems = orderItems.filter(item => item.product_id != $(this).data('id'));
             renderItems();
         });
 
+        // Render items table
         function renderItems() {
-            let tbody = $('#itemsTableBody');
-            tbody.empty();
+            const tbody = $('#itemsTableBody').empty();
             let total = 0;
 
             if (orderItems.length === 0) {
@@ -286,129 +236,80 @@
             $('#itemsContainer').removeClass('hidden');
             $('#noItemsMsg').addClass('hidden');
 
-            $.each(orderItems, function(index, item) {
-                let itemTotal = item.quantity * item.price;
+            orderItems.forEach(item => {
+                const itemTotal = item.quantity * item.price;
                 total += itemTotal;
-
-                let row = `
+                tbody.append(`
                     <tr class="hover:bg-orange-50">
                         <td class="border border-gray-300 px-4 py-2">${item.product_name} (${item.sku_code})</td>
                         <td class="border border-gray-300 px-4 py-2 text-right">${item.quantity}</td>
-                        <td class="border border-gray-300 px-4 py-2 text-right">Rs. ${parseFloat(item.price).toFixed(2)}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">Rs. ${item.price.toFixed(2)}</td>
                         <td class="border border-gray-300 px-4 py-2 text-right font-bold">Rs. ${itemTotal.toFixed(2)}</td>
                         <td class="border border-gray-300 px-4 py-2 text-center">
-                            <button type="button" class="remove-item-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm" data-id="${item.product_id}">
-                                Remove
-                            </button>
+                            <button type="button" class="remove-item-btn bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm" data-id="${item.product_id}">Remove</button>
                         </td>
                     </tr>
-                `;
-                tbody.append(row);
+                `);
             });
 
             $('#totalAmount').text(total.toFixed(2));
         }
 
-        // SUBMIT ORDER FORM
+        // Submit order
         $('#orderForm').submit(function(e) {
             e.preventDefault();
-
-            let customerId = $('#customer_id').val();
-            let orderDate = $('#order_date').val();
-
-            $.ajax({
+            sendAjax({
                 url: '/orders/store',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    customer_id: customerId,
-                    order_date: orderDate,
+                    customer_id: $('#customer_id').val(),
+                    order_date: $('#order_date').val(),
                     order_items: JSON.stringify(orderItems)
                 },
-                success: function(response) {
+                errorMsg: 'Failed to create order',
+                success: (response) => {
                     if (response.success) {
-                        showToast('Order created successfully!', 'success');
-                        setTimeout(() => {
-                            window.location.href = '/orders';
-                        }, 1500);
+                        showToast('Order created successfully!');
+                        setTimeout(() => window.location.href = '/orders', 1500);
                     } else {
-                        let errorMsg = response.message;
-                        if (response.errors) {
-                            errorMsg += ' ' + Object.values(response.errors).join(', ');
-                        }
-                        showToast(errorMsg, 'error');
+                        showToast(response.message + (response.errors ? ' ' + Object.values(response.errors).join(', ') : ''), 'error');
                     }
-                },
-                error: function() {
-                    showToast('Failed to create order', 'error');
                 }
             });
         });
 
-        // OPEN CREATE CUSTOMER MODAL
-        $('#addCustomerBtn').click(function() {
-            $('#customerModal').removeClass('hidden').addClass('flex');
-        });
+        // Customer modal listeners
+        setupModalListeners('customerModal', 'addCustomerBtn', 'closeCustomerModal', 'cancelCustomerBtn');
 
-        // CLOSE CREATE CUSTOMER MODAL
-        function closeCustomerModal() {
-            $('#customerModal').addClass('hidden').removeClass('flex');
-            $('#customerForm')[0].reset();
-            $('.customer-name-error, .customer-email-error').addClass('hidden').text('');
-        }
-
-        $('#closeCustomerModal').click(closeCustomerModal);
-        $('#cancelCustomerBtn').click(closeCustomerModal);
-
-        // SUBMIT CREATE CUSTOMER FORM
+        // Submit customer form
         $('#customerForm').submit(function(e) {
             e.preventDefault();
+            const name = $('#customer_name').val().trim();
+            const email = $('#customer_email').val().trim();
 
-            let name = $('#customer_name').val().trim();
-            let email = $('#customer_email').val().trim();
-
-            $.ajax({
+            sendAjax({
                 url: '/orders/customer/create',
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    name: name,
-                    email: email
+                    name,
+                    email
                 },
-                success: function(response) {
+                errorMsg: 'Failed to create customer',
+                success: (response) => {
                     if (response.success) {
-                        let option = $('<option></option>')
-                            .val(response.customer_id)
-                            .text(response.customer_name + ' (' + response.customer_email + ')')
-                            .prop('selected', true);
-
-                        $('#customer_id').append(option);
-                        closeCustomerModal();
-                        showToast('Customer created successfully!', 'success');
+                        $('#customer_id').append(`<option value="${response.customer_id}" selected>${response.customer_name} (${response.customer_email})</option>`);
+                        toggleModal('customerModal', false);
+                        showToast('Customer created successfully!');
+                    } else if (response.errors) {
+                        if (response.errors.name) $('.customer-name-error').removeClass('hidden').text(response.errors.name);
+                        if (response.errors.email) $('.customer-email-error').removeClass('hidden').text(response.errors.email);
                     } else {
-                        if (response.errors) {
-                            if (response.errors.name) {
-                                $('.customer-name-error').removeClass('hidden').text(response.errors.name);
-                            }
-                            if (response.errors.email) {
-                                $('.customer-email-error').removeClass('hidden').text(response.errors.email);
-                            }
-                        } else {
-                            showToast(response.message, 'error');
-                        }
+                        showToast(response.message, 'error');
                     }
-                },
-                error: function() {
-                    showToast('Failed to create customer', 'error');
                 }
             });
-        });
-
-        // CLOSE MODAL WHEN CLICKING OUTSIDE
-        $(document).click(function(e) {
-            if ($(e.target).is('#customerModal')) {
-                closeCustomerModal();
-            }
         });
     });
 </script>
