@@ -72,6 +72,7 @@ class Order
                 LEFT JOIN customer c ON o.customer_id = c.id
                 LEFT JOIN order_details od ON o.id = od.order_id
                 WHERE o.deleted_at IS NULL
+                AND od.deleted_at IS NULL
                 GROUP BY o.id
                 ORDER BY o.order_date DESC";
 
@@ -196,5 +197,16 @@ class Order
         }
 
         return false;
+    }
+
+    /**
+     * Soft delete an order detail (item)
+     */
+    public function deleteOrderDetail(int $orderDetailId): bool
+    {
+        $sql = "UPDATE order_details SET deleted_at = CURRENT_TIMESTAMP WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([':id' => $orderDetailId]);
     }
 }

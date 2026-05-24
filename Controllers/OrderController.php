@@ -244,4 +244,27 @@ class OrderController extends Controller
             return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete an order item (order detail)
+     */
+    public function deleteItem(Request $request): string
+    {
+        try {
+            $itemId = (int) $request->attributes->get('itemId');
+
+            $orderModel = new Order();
+
+            // Delete the order detail
+            $deleted = $orderModel->deleteOrderDetail($itemId);
+
+            if (!$deleted) {
+                return $this->jsonResponse(false, 'Failed to delete item');
+            }
+
+            return $this->jsonResponse(true, 'Item deleted successfully');
+        } catch (\Exception $e) {
+            return $this->jsonResponse(false, 'Error: ' . $e->getMessage());
+        }
+    }
 }
