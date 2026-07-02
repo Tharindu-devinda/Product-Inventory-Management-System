@@ -36,11 +36,12 @@ const sendAjax = (config) => {
 const toggleModal = (modalId, show) => {
     const $modal = $(`#${modalId}`);
     if (show) {
-        $modal.removeClass('hidden').addClass('flex');
+        $modal.removeClass('hidden pointer-events-none').addClass('flex pointer-events-auto');
     } else {
-        $modal.addClass('hidden').removeClass('flex');
+        $modal.addClass('hidden pointer-events-none').removeClass('flex pointer-events-auto');
         $modal.find('form')[0]?.reset();
-        $modal.find('.error').addClass('hidden').text('');
+        // Clear all error messages (any element with 'error' in class name)
+        $modal.find('[class*="error"]').addClass('hidden').text('');
     }
 };
 
@@ -52,8 +53,25 @@ const toggleModal = (modalId, show) => {
  * @param {string} cancelBtnId - Cancel button ID
  */
 const setupModalListeners = (modalId, openBtnId, closeBtnId, cancelBtnId) => {
-    $(`#${openBtnId}`).click(() => toggleModal(modalId, true));
-    $(`#${closeBtnId}`).click(() => toggleModal(modalId, false));
-    $(`#${cancelBtnId}`).click(() => toggleModal(modalId, false));
-    $(document).click((e) => $(e.target).is(`#${modalId}`) && toggleModal(modalId, false));
+    $(`#${openBtnId}`).on('click', function(e) {
+        e.stopPropagation();
+        toggleModal(modalId, true);
+    });
+    
+    $(`#${closeBtnId}`).on('click', function(e) {
+        e.stopPropagation();
+        toggleModal(modalId, false);
+    });
+    
+    $(`#${cancelBtnId}`).on('click', function(e) {
+        e.stopPropagation();
+        toggleModal(modalId, false);
+    });
+    
+    // Close modal when clicking the backdrop (outside the modal box)
+    $(`#${modalId}`).on('click', function(e) {
+        if ($(e.target).is(`#${modalId}`)) {
+            toggleModal(modalId, false);
+        }
+    });
 };

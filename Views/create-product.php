@@ -18,7 +18,7 @@
         <form id="productForm" enctype="multipart/form-data">
             <div class="form-group mt-1">
                 <label for="name">Product Name :</label>
-                <input type="text" id="name" name="name" minlength="3" maxlength="100" value="<?= $old['name'] ?? '' ?>"
+                <input type="text" id="name" name="name" minlength="3" maxlength="100" value="<?= $old['name'] ?? '' ?>" autocomplete="off"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter product name" required>
                 <small class="text-red-500"></small>
@@ -26,7 +26,7 @@
 
             <div class="form-group mt-1">
                 <label for="sku_code">SKU Code :</label>
-                <input type="text" id="sku_code" name="sku_code" minlength="3" maxlength="150"
+                <input type="text" id="sku_code" name="sku_code" minlength="3" maxlength="150" autocomplete="off"
                     value="<?= $old['sku_code'] ?? '' ?>"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="e.g., PROD-001" required>
@@ -35,7 +35,7 @@
 
             <div class="form-group mt-1">
                 <label for="price">Price :</label>
-                <input type="number" id="price" name="price" step="0.01" min="0" value="<?= $old['price'] ?? '' ?>"
+                <input type="number" id="price" name="price" step="0.01" min="0" value="<?= $old['price'] ?? '' ?>" autocomplete="off"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter product price" required>
                 <small class="text-red-500"></small>
@@ -43,7 +43,7 @@
 
             <div class="form-group mt-1">
                 <label for="description">Description :</label>
-                <textarea id="description" name="description" maxlength="500" rows="4"
+                <textarea id="description" name="description" maxlength="500" rows="4" autocomplete="off"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter product description (optional)"><?= $old['description'] ?? '' ?></textarea>
                 <small class="text-red-500"></small>
@@ -51,7 +51,7 @@
 
             <div class="form-group mt-1">
                 <label for="supplier_id">Supplier :</label>
-                <select id="supplier_id" name="supplier_id"
+                <select id="supplier_id" name="supplier_id" autocomplete="off"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     required>
                     <option value="">-- Select Supplier --</option>
@@ -61,19 +61,21 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <small class="text-red-500"></small>
+            </div>
 
-                <div class="form-group mt-1">
-                    <label for="quantity">Quantity :</label>
-                    <input type="number" id="quantity" name="quantity" min="0" value="<?= $old['quantity'] ?? '0' ?>"
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                        placeholder="Enter initial quantity" required>
-                </div>
+            <div class="form-group mt-1">
+                <label for="quantity">Quantity :</label>
+                <input type="number" id="quantity" name="quantity" min="0" value="<?= $old['quantity'] ?? '0' ?>" autocomplete="off"
+                    class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    placeholder="Enter initial quantity" required>
+                <small class="text-red-500"></small>
+            </div>
 
-                <div class="form-group mt-1">
-                    <label for="images">Product Images :</label>
-                    <input type="file" id="images" name="images[]" multiple
-                        class="w-full mt-1 border border-gray-300 p-2 rounded-lg" placeholder="Upload product images">
-                </div>
+            <div class="form-group mt-1">
+                <label for="images">Product Images :</label>
+                <input type="file" id="images" name="images[]" multiple autocomplete="off"
+                    class="w-full mt-1 border border-gray-300 p-2 rounded-lg" placeholder="Upload product images">
                 <small class="text-red-500"></small>
             </div>
 

@@ -5,8 +5,6 @@
  * 
  * @var array $customers List of all customers
  * @var array $products List of all products
- * @var array $errors Validation errors
- * @var array $old Old form data
  */
 ?>
 
@@ -16,9 +14,6 @@
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <!-- SELECT2 JS -->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <!-- MODAL & TOAST UTILITIES -->
-        <script src="/assets/js/modal.js"></script>
-        </section>
 
         <section class="text-center mb-6">
             <h1 class="text-2xl font-bold">Create Order</h1>
@@ -131,8 +126,8 @@
 </div>
 
 <!-- CREATE CUSTOMER MODAL -->
-<div id="customerModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md relative">
+<div id="customerModal" class="fixed inset-0 bg-black/25 hidden items-center justify-center pointer-events-none z-50">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md relative pointer-events-auto">
         <button type="button" id="closeCustomerModal" class="absolute top-1 right-2 text-3xl">&times;</button>
 
         <h2 class="text-2xl font-bold mb-6">Create New Customer</h2>

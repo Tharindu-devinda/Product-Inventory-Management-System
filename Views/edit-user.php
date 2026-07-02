@@ -8,7 +8,7 @@
         <form id="editForm">
             <div class="form-group mt-1">
                 <label for="username">User Name :</label>
-                <input type="text" id="username" name="username" minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+"
+                <input type="text" id="username" name="username" minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" autocomplete="username"
                     value="<?= $user['username'] ?>" title="Only letters, numbers, underscore. Min 3 characters."
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="Enter user name" required>
@@ -17,7 +17,7 @@
 
             <div class="form-group mt-1">
                 <label for="email">Email Address :</label>
-                <input type="email" id="email" name="email" value="<?= $user['email'] ?>"
+                <input type="email" id="email" name="email" value="<?= $user['email'] ?>" autocomplete="email"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     placeholder="example@gmail.com" minlength="6" pattern=".{6,}" title="Minimum 6 characters required"
                     required>
@@ -26,7 +26,7 @@
 
             <div class="form-group mt-1">
                 <label for="role">User Role :</label>
-                <select id="role" name="role"
+                <select id="role" name="role" autocomplete="off"
                     class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                     required>
                     <option value="">-- Select Role --</option>
@@ -52,7 +52,7 @@
 </div>
 
 <script>
-    document.getElementById("editForm").addEventListener("submit", function (e) {
+    document.getElementById("editForm").addEventListener("submit", function(e) {
         e.preventDefault();
 
         // Clear previous errors
@@ -64,9 +64,9 @@
         let userId = <?= $user['id'] ?>;
 
         fetch(`/users/${userId}/update`, {
-            method: 'POST',
-            body: formData
-        })
+                method: 'POST',
+                body: formData
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

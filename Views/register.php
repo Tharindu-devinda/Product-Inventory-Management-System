@@ -52,7 +52,7 @@
 
                 <div class="form-group mt-1">
                     <label for="role">User Role :</label> <br />
-                    <select id="role" name="role"
+                    <select id="role" name="role" autocomplete="off"
                         class="w-full mt-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                         required>
                         <option value="">-- Select Role --</option>
@@ -76,8 +76,8 @@
     </div>
     <!-- AJAX form submission and error handling -->
     <script>
-        document.getElementById("registerForm").addEventListener("submit", function (e) {
-            e.preventDefault();  // Prevent page reload
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            e.preventDefault(); // Prevent page reload
 
             let password = document.getElementById("password").value;
             let confirmPassword = document.getElementById("confirm_password").value;
@@ -94,9 +94,9 @@
 
             // Send AJAX request
             fetch("/users/store", {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     // Clear previous errors first
@@ -110,12 +110,12 @@
                         successMsg.className = 'text-green-600 text-center';
                         successMsg.textContent = data.message;
                         document.querySelector('form').parentElement.insertBefore(successMsg, document.querySelector('form'));
-                        document.getElementById("registerForm").reset();  // Clear form
+                        document.getElementById("registerForm").reset(); // Clear form
 
                         // Remove success message after 3 seconds
                         setTimeout(() => {
                             successMsg.remove();
-                        }, 3000);  // 3000 milliseconds = 3 seconds
+                        }, 3000); // 3000 milliseconds = 3 seconds
                     } else {
                         // Show validation errors
                         if (data.errors) {

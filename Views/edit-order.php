@@ -1,15 +1,3 @@
-<?php
-
-/**
- * Edit Order View
- * 
- * @var array $order Order details
- * @var array $customers List of all customers
- * @var array $products List of all products
- * @var array $orderDetails Order items with product details
- */
-?>
-
 <div class="py-0 mx-2">
     <div class="max-w-4xl mx-auto mt-8 py-6 px-4 bg-white rounded-lg shadow-md">
         <section class="text-center mb-6">
@@ -45,7 +33,7 @@
                         <th class="border border-gray-300 px-4 py-2 text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="itemsTableBody">
                     <?php
                     $currentTotal = 0;
                     foreach ($orderDetails as $detail):
@@ -64,12 +52,17 @@
                             </td>
                         </tr>
                     <?php endforeach; ?>
+                </tbody>
+                <tfoot>
                     <tr class="bg-amber-100 font-bold">
                         <td colspan="4" class="border border-gray-300 px-4 py-2 text-right">Current Total:</td>
-                        <td class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($currentTotal, 2) ?></td>
+                        <td id="currentTotalCell" class="border border-gray-300 px-4 py-2 text-right">Rs. <?= number_format($currentTotal, 2) ?></td>
+                        <td class="border border-gray-300 px-4 py-2"></td>
                     </tr>
-                </tbody>
+                </tfoot>
             </table>
+
+            <p id="noItemsMsg" class="text-center text-gray-600 mt-4 <?= count($orderDetails) > 0 ? 'hidden' : '' ?>">No items remaining in this order</p>
         </div>
 
         <div class="flex gap-2 mt-6">
@@ -141,8 +134,14 @@
                         row.fadeOut(300, function() {
                             $(this).remove();
 
-                            // Recalculate and update total
-                            updateOrderTotal();
+                            // Use the authoritative total returned by the server
+                            // (recalculated from the database, not from the DOM)
+                            $('#currentTotalCell').text('Rs. ' + response.new_total);
+
+                            // Show "no items" message if the table is now empty
+                            if ($('#itemsTableBody tr').length === 0) {
+                                $('#noItemsMsg').removeClass('hidden');
+                            }
 
                             showToast('Item deleted successfully!', 'success');
                         });
@@ -159,23 +158,7 @@
             });
         });
 
-        // CALCULATE AND UPDATE ORDER TOTAL
-        function updateOrderTotal() {
-            let total = 0;
-            let rows = $('table tbody tr:not(:last-child)'); // Exclude footer row
-
-            rows.each(function() {
-                let totalCell = $(this).find('td').eq(3); // 4th column (Total)
-                let totalText = totalCell.text().replace('Rs. ', '').replace(/,/g, '');
-                total += parseFloat(totalText) || 0;
-            });
-
-            // Update the footer total
-            let footerTotal = $('table tfoot tr td:last');
-            footerTotal.text('Rs. ' + total.toFixed(2));
-        }
-
-        // CLOSE DELETE MODAL
+        // CLOSE MODAL
         function closeDeleteModal() {
             $('#deleteConfirmModal').addClass('hidden').removeClass('flex');
             itemToDelete = null;
